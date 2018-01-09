@@ -66,8 +66,6 @@ public class ProceduralSplat : MonoBehaviour
     // Tree parameters (can be changed real-time in editor or game)
     // ---------------------------------------------------------------------------------------------------------------------------
 
-    public int Seed; // Random seed on which the generation is based
-    [Range(3, 8)]
     public int NumberOfSides = 16; // Number of sides for tree
     [Range(0.25f, 20f)]
     public float BaseRadius = 2f; // Base radius in meters
@@ -134,17 +132,15 @@ public class ProceduralSplat : MonoBehaviour
 		baseColorList = ps.baseColorList;
 		leavesColorList = ps.leavesColorList;
 	}
-	public void Init(int setSeed, CreateIsland setIsland, Vector3 setPosition, float setScale, bool setIsTree = false)
+	public void Init(CreateIsland setIsland, Vector3 setPosition, float setScale, bool setIsTree = false)
     {
         gameObject.isStatic = false;
 		is_tree = setIsTree;
         island = setIsland;
-        Seed = setSeed;
         scalingFactor = setScale * scale;
         positionFactor = setPosition;
 
         var originalRotation = transform.localRotation;
-		Random.InitState(Seed);
 		if (baseColorList.Count > 0) {
 			color = baseColorList [Mathf.FloorToInt (Random.value * baseColorList.Count)];
 		}
@@ -347,7 +343,6 @@ public class ProceduralSplat : MonoBehaviour
         ringShape = new float[NumberOfSides + 1];
         var k = (1f - BranchRoundness) * 0.5f;
         // Randomize the vertex offsets, according to BranchRoundness
-        Random.InitState(Seed);
         for (var n = 0; n < NumberOfSides; n++) ringShape[n] = 1f - (Random.value - 0.5f) * k;
         ringShape[NumberOfSides] = ringShape[0];
     }

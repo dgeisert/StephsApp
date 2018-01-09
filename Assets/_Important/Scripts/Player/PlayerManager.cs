@@ -112,14 +112,6 @@ public class PlayerManager : Photon.MonoBehaviour
             LoadBodyParts();
         }
         spark = GameManager.instance.GetResourcePrefab("Spark");
-        foreach (OtherPlayerObject opo in GameObject.FindObjectsOfType<OtherPlayerObject>())
-        {
-            if (opo.isMine)
-            {
-                otherPlayerObject = opo;
-                otherPlayerObject.InitLocal(this);
-            }
-        }
         primaryUI = dgUtil.Instantiate((primaryUIPrefab), primaryUIPrefab.transform.position, primaryUIPrefab.transform.rotation, true, playerHips).GetComponent<PrimaryUI>();
         primaryUI.Init();
         Tutorial tutorial = FindObjectOfType<Tutorial>();

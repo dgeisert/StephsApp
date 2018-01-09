@@ -33,6 +33,7 @@ public class TreasureChest : MonoBehaviour
 
     void Start()
     {
+		/*
 		if (seed != 0 & GameManager.GetScene() == "islandgen") {
 			if (PlayerManager.instance.claimedChests.Contains (seed) || PlayerManager.instance.chestsToClaim.Contains (seed)) {
 				gameObject.SetActive (false);
@@ -133,6 +134,7 @@ public class TreasureChest : MonoBehaviour
             audioSource.clip = open;
 		}
 		gameObject.AddComponent<VRTK_InteractableObject>().InteractableObjectTouched += AttemptOpen;
+		*/
     }
 
 	public void AttemptOpen(object sender, InteractableObjectEventArgs e){

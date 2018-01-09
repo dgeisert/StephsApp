@@ -20,13 +20,15 @@ public class CreateLevel : MonoBehaviour
     Vector3 zeroing = Vector3.zero;
     public List<Biome> biomes;
     public Biome simpleBiome;
-    public List<CreateIsland> islands;
-    List<PointOfInterest>[] specialPOIs;
+	public Dictionary<Vector2, CreateIsland> islands;
+    List<PointOfInterest> specialPOIs;
     public List<GameObject> enemies;
     public int specialValue, specialComplete = 0;
     public bool levelFailed = false;
     float levelStartTime;
     public List<SpawnPoint> spawnPoints = new List<SpawnPoint>();
+	public int centerX, centerZ, tiles;
+	public float islandSize = 50;
 
     //special POIs
     public PointOfInterest rescueObject;
@@ -52,375 +54,80 @@ public class CreateLevel : MonoBehaviour
 
     void Awake()
     {
-        if (!skipDataLoad)
-        {
-            PlayerPrefs.SetInt("rescued", 0);
-            level = PlayerPrefs.GetInt("playingLevel");
-            islandCount = PlayerPrefs.GetInt("playingLevelIslandCount");
-            sizeMin = PlayerPrefs.GetFloat("playingLevelSizeMin");
-            sizeMax = PlayerPrefs.GetFloat("playingLevelSizeMax");
-            levelType = (LevelType)PlayerPrefs.GetInt("playingLevelType");
-            specialValue = PlayerPrefs.GetInt("playingLevelSpecialValue");
-            badWordSpawn = PlayerPrefs.GetInt("playingLevelBadWord");
-            if (PlayerPrefs.GetInt("playingLevelSeed") != 0)
-            {
-                seed = PlayerPrefs.GetInt("playingLevelSeed");
-            }
-            PlayerPrefs.SetInt("playingLevelSeed", 0);
-        }
 
         CreateLevel.instance = this;
         Random.InitState(seed);
-        levelStartTime = Time.time;
+		levelStartTime = Time.time;
 
-        enemies = new List<GameObject>();
-        perlinOffsetX = Random.value * 100;
-        perlinOffsetY = Random.value * 100;
-        perlinOffsetYX = Random.value * 100;
-        perlinOffsetYZ = Random.value * 100;
-        perlinOffsetVoidX = Random.value * perlinCrunch;
-        perlinOffsetVoidZ = Random.value * perlinCrunch;
-        yScale = Random.value * 100;
+		islands = new Dictionary<Vector2, CreateIsland>();
+		centerX = -1;
+		centerZ = -1;
+		tiles = 3;
+		SetupAndCenterMap ();
+    }
 
-        islands = new List<CreateIsland>();
-        float furthestIslandDistance = 0, closestIslandDistance = 0;
-        int furthestIslandIndex = 0, closestIslandIndex = 0;
-        List<Biome> setBiomes = new List<Biome>();
-        if (levelType == LevelType.InfiniteWave)
-        {
-            setBiomes.Add(simpleBiome);
-        }
-        else
-        {
-            foreach (Biome b in biomes)
-            {
-                if (b.requiredLevel <= level)
-                {
-                    setBiomes.Add(b);
-                }
-            }
-        }
-        biomes = setBiomes;
+	void SetupAndCenterMap(){
 
-        //set positions and create CreateIslands bases
-        float yOffset = yScale * Mathf.PerlinNoise(
-            (perlinOffsetYX) / perlinCrunch
-            , (perlinOffsetYZ) / perlinCrunch);
-        Vector3 position = Vector3.zero;
-        for (int i = 0; i < islandCount * 10; i++)
-        {
-            int basePosition = Mathf.FloorToInt(Random.value * islands.Count);
-            if (islands.Count > 0)
-            {
-                position = islands[basePosition].transform.position
-                + new Vector3((Random.value - 0.5f), 0, (Random.value - 0.5f)).normalized
-                    * ((sizeMax - sizeMin) * Random.value + (sizeMin * 1.2f));
-            }
-            float minDistance = sizeMax * 1.5f;
-            foreach (CreateIsland island in islands)
-            {
-                float distance = Vector3.Distance(position, island.transform.position);
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                }
-            }
-            if (minDistance > sizeMin * 1.1f)
-            {
-                Vector3 placement = new Vector3(
-                    position.x
-                    , yScale * Mathf.PerlinNoise(
-                        (position.x + perlinOffsetYX) / perlinCrunch
-                        , (position.y + perlinOffsetYZ) / perlinCrunch)
-                    - yOffset
-                    , position.z);
-                GameObject go = dgUtil.Instantiate(islandBase, placement, Quaternion.identity);
-                go.GetComponent<CreateIsland>().index = islands.Count;
-                if (go.transform.position.magnitude > furthestIslandDistance)
-                {
-                    furthestIslandDistance = go.transform.position.magnitude;
-                    furthestIslandIndex = islands.Count;
-                }
-                islands.Add(go.GetComponent<CreateIsland>());
-                if (i > 0 && islands[basePosition] != null)
-                {
-                    go.GetComponent<CreateIsland>().fromIsland = islands[basePosition];
-                }
-            }
-            if (islands.Count >= islandCount)
-            {
-                break;
-            }
-        }
-		if (islandCount > 1) {
-			for (int i = 0; i < islandCount; i++) {
-				if (Vector3.Distance (islands [i].transform.position, islands [furthestIslandIndex].transform.position) > closestIslandDistance) {
-					closestIslandDistance = Vector3.Distance (islands [i].transform.position, islands [furthestIslandIndex].transform.position);
-					closestIslandIndex = i;
+		for (int i = centerX; i < centerX + tiles; i++) {
+			int j = centerZ - 1;
+			if (islands.ContainsKey (new Vector2 (i, j))) {
+				islands [new Vector2 (i, j)].gameObject.SetActive (false);
+			}
+		}
+		for (int i = centerX; i < centerX + tiles; i++) {
+			int j = centerZ + tiles;
+			if (islands.ContainsKey (new Vector2 (i, j))) {
+				islands [new Vector2 (i, j)].gameObject.SetActive (false);
+			}
+		}
+		for (int j = centerZ; j < centerZ + tiles; j++) {
+			int i = centerX - 1;
+			if (islands.ContainsKey (new Vector2 (i, j))) {
+				islands [new Vector2 (i, j)].gameObject.SetActive (false);
+			}
+		}
+		for (int j = centerZ; j < centerZ + tiles; j++) {
+			int i = centerX + tiles;
+			if (islands.ContainsKey (new Vector2 (i, j))) {
+				islands [new Vector2 (i, j)].gameObject.SetActive (false);
+			}
+		}
+		for (int i = centerX; i < centerX + tiles; i++) {
+			for (int j = centerZ; j < centerZ + tiles; j++) {
+				if (islands.ContainsKey (new Vector2 (i, j))) {
+					islands[new Vector2(i, j)].Init (this, specialPOIs);
+				} else {
+					CreateIsland island = dgUtil.Instantiate (islandBase, new Vector3 (i * islandSize, 0, j * islandSize), Quaternion.identity).GetComponent<CreateIsland> ();
+					islands.Add (new Vector2 (i, j), island);
+					island.size = (int)islandSize;
+					island.randomSeed = i * 100 + j;
+					island.biome = island.gameObject.AddComponent<Biome> ();
+					island.biome.Init (island.size, biomes [Mathf.FloorToInt (Random.value * biomes.Count)], island);
+					island.Init (this, specialPOIs);
 				}
 			}
-		} else {
-			closestIslandIndex = 0;
-			closestIslandDistance = 0;
 		}
-
-        specialPOIs = new List<PointOfInterest>[islands.Count];
-        
-        //set up the level type
-        if (level == 0)
-        {
-            islandEnemyStartCount = 1;
-        }
-        else
-        {
-            switch (levelType)
-            {
-                case LevelType.Exit:
-                    islandEnemyStartCount = 1;
-                    break;
-                case LevelType.Timed:
-                    islandEnemyStartCount = 0.75f;
-                    break;
-                case LevelType.Boss:
-                    if (Mathf.FloorToInt(level / 10) < bossPOI.Count)
-                    {
-                        if (specialPOIs[specialPOIs.Length - 1] == null)
-                        {
-                            specialPOIs[specialPOIs.Length - 1] = new List<PointOfInterest>();
-                        }
-                        specialPOIs[specialPOIs.Length - 1].Add(bossPOI[Mathf.FloorToInt(level / 10)]);
-                    }
-                    break;
-                case LevelType.Rescue:
-                    for (int i = 0; i < specialValue; i++)
-                    {
-                        int poiIndex = Mathf.FloorToInt(islands.Count - i * islands.Count / specialValue - 1);
-                        if (specialPOIs[poiIndex] == null)
-                        {
-                            specialPOIs[poiIndex] = new List<PointOfInterest>();
-                        }
-                        specialPOIs[poiIndex].Add(rescueObject);
-                    }
-                    break;
-			case LevelType.Survive:
-				islandEnemyStartCount = 0;
-				break;
-			case LevelType.Wave:
-				islandEnemyStartCount = 0;
-				break;
-			case LevelType.InfiniteWave:
-				islandEnemyStartCount = 0;
-				break;
-                default:
-                    break;
-            }
-        }
-
-
-        //set sizes and set island values
-        for (int i = 0; i < islands.Count; i++)
-        {
-            float minDistance = sizeMax;
-            CreateIsland closestIsland = islands[0];
-            for (int j = 0; j < islands.Count; j++)
-            {
-                if (islands[j] != islands[i])
-                {
-                    float distance = Vector3.Distance(islands[j].transform.position, islands[i].transform.position);
-                    if (distance < minDistance)
-                    {
-                        minDistance = distance;
-                        closestIsland = islands[j];
-                    }
-                }
-            }
-            islands[i].closestIsland = closestIsland;
-            islands[i].size = Mathf.FloorToInt(minDistance);
-            islands[i].randomSeed = Mathf.FloorToInt(10000 * Random.value);
-            islands[i].biome = islands[i].gameObject.AddComponent<Biome>();
-            islands[i].biome.Init(islands[i].size, biomes[Mathf.FloorToInt(Random.value * biomes.Count)], islands[i]);
-            if (!islands[i].initialized)
-            {
-                islands[i].Init(this, specialPOIs[islands[i].index], islandEnemyStartCount * level);
-            }
-        }
-
-        //put ship in for entering and exiting
-
-
-		switch (levelType)
-		{
-		case LevelType.Survive:
-		case LevelType.Wave:
-			foreach (SpawnPoint sp in spawnPoints) {
-				sp.singleType = false;
-			}
-			islandEnemyStartCount = 0;
-			break;
-		case LevelType.InfiniteWave:
-			level = 5;
-			spawnPoints = new List<SpawnPoint> ();
-			for (int i = 0; i < 6; i++) {
-				SpawnPoint newSP = dgUtil.Instantiate (
-					                   arbitrarySpawnPoint
-					, new Vector3 (Mathf.Cos (i * Mathf.PI / 3), 0.01f, Mathf.Sin (i * Mathf.PI / 3)).normalized * 30
-					, Quaternion.identity).GetComponent<SpawnPoint> ();
-				newSP.Init ();
-				spawnPoints.Add (newSP);
-			}
-			break;
-		default:
-			break;
-		}
-
-		if (levelType == LevelType.InfiniteWave) {
-			exitShipPosition = new Vector3 (0, -1000, 0);
-			enterShipPosition = new Vector3 (0, islands[0].transform.position.y, 0);
-		} else {
-			Vector3 exitXZ = islands [furthestIslandIndex].transform.position.normalized * (furthestIslandDistance + islands [furthestIslandIndex].size / 2 + 15);
-			exitXZ = (exitXZ.magnitude - 5) * exitXZ.normalized;
-			exitShipPosition = new Vector3 (exitXZ.x, islands [furthestIslandIndex].transform.position.y - 5, exitXZ.z);
-
-			closestIslandDistance = (islands [closestIslandIndex].transform.position).magnitude;
-			Vector3 enterXZ = islands [closestIslandIndex].transform.position + (islands [closestIslandIndex].transform.position - exitShipPosition).normalized * (islands [closestIslandIndex].size / 2);
-			enterShipPosition = new Vector3 (enterXZ.x, islands [closestIslandIndex].transform.position.y, enterXZ.z);
-
-            bool aboveGround = false;
-            while (!aboveGround)
-            {
-                RaycastHit hit;
-                Physics.Raycast(enterShipPosition + Vector3.up * 2, -Vector3.up, out hit, 25, (1 << 0));
-                if (hit.collider != null)
-                {
-                    if (hit.collider.name == "Top")
-                    {
-                        enterShipPosition = hit.point;
-                        aboveGround = true;
-                        enterShipPosition -= enterShipPosition.normalized * 10;
-                    }
-                }
-                enterShipPosition -= enterShipPosition.normalized;
-            }
-        }
-		GameObject thisGameManager = dgUtil.Instantiate (gameManager, enterShipPosition, Quaternion.identity);
-        GameObject thisShip = dgUtil.Instantiate(ship, exitShipPosition, Quaternion.identity);
-        thisShip.GetComponent<Ship>().Init();
-
-        actualIslandCount = islands.Count;
-
-        MissionStart();
-    }
-
-    public void MissionStart()
-    {
-        //set up the level type
-        if (level == 0)
-        {
-            SetMissionText("find the ship\nthe comet will lead the way");
-        }
-        else
-        {
-            switch (levelType)
-            {
-                case LevelType.Exit:
-                    SetMissionText("find the ship");
-                    break;
-                case LevelType.Timed:
-                    StartTimer((float)specialValue);
-                    SetMissionText("find the ship in time");
-                    break;
-                case LevelType.Boss:
-                    SetMissionText("defeat the boss");
-                    break;
-                case LevelType.Rescue:
-                    SetMissionText("rescue the hostages");
-                    break;
-                case LevelType.Survive:
-                    StartTimer((float)specialValue);
-                    InvokeRepeating("SurvivalSpawnEnemies", 5, 8);
-                    SetMissionText("survive until timer ends");
-				break;
-			case LevelType.Wave:
-				InvokeRepeating ("CheckEnemies", 1, 1);
-				break;
-			case LevelType.InfiniteWave:
-                    InvokeRepeating("CheckEnemies", 1, 1);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    public void Start()
-    {
-        OnTeleport(PlayerManager.instance.GetPlayerPosition());
-
-
-        //set up the level type
-        switch (levelType)
-        {
-            case LevelType.Exit:
-                break;
-            case LevelType.Timed:
-                break;
-            case LevelType.Boss:
-                break;
-            case LevelType.Rescue:
-                break;
-            case LevelType.Survive:
-			break;
-		case LevelType.Wave:
-			break;
-		case LevelType.InfiniteWave:
-			break;
-            default:
-                break;
-        }
-    }
+	}
 
     public void Update()
     {
-        timeInLevel = Time.time - levelStartTime;
-        switch (levelType)
-        {
-            case LevelType.Timed:
-                if (specialValue - timeInLevel < 10)
-                {
-                    PlayerManager.instance.infoLeftAlign.color = Color.red;
-                }
-                else if (specialValue - timeInLevel < 60)
-                {
-                    PlayerManager.instance.infoLeftAlign.color = Color.yellow;
-                }
-                if (timeInLevel > specialValue)
-                {
-                    levelFailed = true;
-                    SetMissionText("time up, level failed");
-                }
-                break;
-            case LevelType.Survive:
-                if (specialValue - timeInLevel < 10)
-                {
-                    PlayerManager.instance.infoLeftAlign.color = Color.red;
-                }
-                break;
-            case LevelType.InfiniteWave:
-                if(PlayerManager.instance != null)
-                {
-                    PlayerManager.instance.infoLeftAlign.text = "score: " + PlayerManager.instance.score.ToString();
-                }
-                break;
-            default:
-                break;
-        }
-        if(Ship.instance != null)
-        {
-            if (!Ship.instance.playerOnShip && (PlayerManager.instance.savedSettings["showInfoText"] || timeInLevel < 30))
-            {
-                PlayerManager.instance.infoRightAlign.text = missionText;
-            }
-        }
+		timeInLevel = Time.time - levelStartTime;
+		if(Input.GetKeyDown(KeyCode.W)){
+			centerZ++;
+			SetupAndCenterMap ();
+		}
+		if(Input.GetKeyDown(KeyCode.S)){
+			centerZ--;
+			SetupAndCenterMap ();
+		}
+		if(Input.GetKeyDown(KeyCode.A)){
+			centerX--;
+			SetupAndCenterMap ();
+		}
+		if(Input.GetKeyDown(KeyCode.D)){
+			centerX++;
+			SetupAndCenterMap ();
+		}
     }
 
     public void SurvivalSpawnEnemies()
@@ -476,55 +183,8 @@ public class CreateLevel : MonoBehaviour
                 , PlayerManager.instance.GetPlayerStandingPosition()
                 , PlayerManager.instance.playerHips.rotation);
         }
-        CreateIsland closestIsland = GetClosestIsland(playerPosition);
-        if (PlayerManager.instance.particles != null)
-        {
-            if (closestIsland.biome.particles != null)
-            {
-                if (PlayerManager.instance.particles.name == closestIsland.biome.particles.name)
-                {
-                    return;
-                }
-            }
-            DestroyImmediate(PlayerManager.instance.particles);
-        }
-        if (closestIsland.biome.particles != null)
-        {
-            PlayerManager.instance.particles = dgUtil.Instantiate(closestIsland.biome.particles, Vector3.zero, Quaternion.identity, true, PlayerManager.instance.eyeCamera.transform);
-        }
     }
 
-    CreateIsland GetClosestIsland(Vector3 playerPosition)
-    {
-        float closestIslandDistance = 1000f;
-        CreateIsland closestIsland = null;
-        foreach (CreateIsland island in islands)
-        {
-            float islandDistance = Vector3.Distance(new Vector3(island.size, 0, island.size) + island.transform.position, playerPosition);
-            if (islandDistance < closestIslandDistance)
-            {
-                closestIsland = island;
-                closestIslandDistance = islandDistance;
-            }
-            island.gameObject.SetActive(true);
-            /* this section would be for unloading islands in the distance
-            if (islandDistance < IslandInitDistance)
-            {
-                if (islandDistance < closestIslandDistance)
-                {
-                    closestIsland = island;
-                    closestIslandDistance = islandDistance;
-                }
-                island.gameObject.SetActive(true);
-            }
-            else
-            {
-                island.gameObject.SetActive(false);
-            }
-            */
-        }
-        return closestIsland;
-    }
 
     float timer;
     public void StartTimer(float time)

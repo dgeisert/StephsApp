@@ -56,7 +56,6 @@ public class Ship : MonoBehaviour
             return;
         }
         gone = true;
-		CreateLevel.instance.MissionStart();
 		GameObject go = dgUtil.Instantiate(warpAway, CreateLevel.instance.enterShipPosition + new Vector3(-5, 5, 0), Quaternion.identity);
 		Destroy(go, 10f);
 		GameObject go2 = dgUtil.Instantiate(warpAway, CreateLevel.instance.exitShipPosition + new Vector3(-5, 5, 0), Quaternion.identity);

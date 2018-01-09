@@ -44,10 +44,6 @@ public class GameManager : Photon.MonoBehaviour
 			Destroy (gameObject);
 			return;
 		}
-		if (CreateLevel.instance != null) {
-			transform.position = CreateLevel.instance.enterShipPosition + transform.position;
-			transform.SetParent (null);
-		}
         if (initialized)
         {
             return;
@@ -55,18 +51,12 @@ public class GameManager : Photon.MonoBehaviour
         initialized = true;
         EnemyChecks = new List<Action>();
         resources = new Dictionary<string, GameObject>();
-        Physics.IgnoreLayerCollision(2, 8);
         GameManager.instance = this;
         if (PlayerManager.instance == null)
         {
             PlayerManager pm = dgUtil.Instantiate(player, transform.position, transform.rotation, false, null).GetComponent<PlayerManager>();
-            pm.Init();
+            //pm.Init();
         }
-        Ship s = GameObject.FindObjectOfType<Ship>();
-        if(s != null)
-        {
-            s.Init();
-		}
     }
 
 	public void LoadMainMenu(){

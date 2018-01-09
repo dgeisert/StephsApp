@@ -46,7 +46,7 @@ public class Statue : MonoBehaviour {
 		foreach (ProceduralSplat ps in GetComponentsInChildren<ProceduralSplat>()) {
 			ps.baseColorList = new List<Color>{ Color.grey };
 			ps.leavesColorList = new List<Color>{ Color.grey };
-			ps.Init (Mathf.FloorToInt (Random.value * 10000), island, transform.localPosition + Vector3.up / 2, 0.05f, true);
+			ps.Init (island, transform.localPosition + Vector3.up / 2, 0.05f, true);
 		}
 	}
 }

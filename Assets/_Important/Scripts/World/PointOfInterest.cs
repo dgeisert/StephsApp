@@ -80,19 +80,17 @@ public class PointOfInterest : MonoBehaviour
         Dictionary<int, int> vertLookup = new Dictionary<int, int>();
         List<Vector3> newVerts = new List<Vector3>();
         List<int> newTris = new List<int>();
-        foreach (int i in triangles)
-        {
-            if (vertLookup.ContainsKey(i))
-            {
-                newTris.Add(vertLookup[i]);
-            }
-            else
-            {
-                vertLookup.Add(i, newVerts.Count);
-				newVerts.Add(verts[i] + new Vector3(-x + size/2, 0.01f, -z + size/2));
-                newTris.Add(vertLookup[i]);
-            }
-        }
+		if (triangles != null) {
+			foreach (int i in triangles) {
+				if (vertLookup.ContainsKey (i)) {
+					newTris.Add (vertLookup [i]);
+				} else {
+					vertLookup.Add (i, newVerts.Count);
+					newVerts.Add (verts [i] + new Vector3 (-x + size / 2, 0.01f, -z + size / 2));
+					newTris.Add (vertLookup [i]);
+				}
+			}
+		}
         Mesh mesh = new Mesh();
         mesh.SetVertices(newVerts);
         mesh.SetTriangles(newTris, 0);
@@ -112,8 +110,7 @@ public class PointOfInterest : MonoBehaviour
 				setPosition += splat.transform.localPosition;
 			}
 			splat.Init (
-				Mathf.FloorToInt (10000 * Random.value)
-				, island
+				island
 				, setPosition
 				, scale
 				, splat.is_tree);
