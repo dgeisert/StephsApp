@@ -110,6 +110,6 @@ public class GameManager : MonoBehaviour
 	void DoSceneLoad()
     {
         GameManager.isLoading = false;
-        PhotonNetwork.LoadLevel(levelToLoad);
+        SceneManager.LoadScene(levelToLoad);
     }
 }

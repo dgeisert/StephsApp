@@ -53,9 +53,9 @@ public class dgUtil
 		}
 		else
 		{
-			if (PhotonNetwork.connected) 
+			if (false)//contectedremotely 
 			{
-				return PhotonNetwork.Instantiate (prefab.name, position, rotation, 0, data);
+				return InstantiateLocalOnParent (prefab, position, rotation, parent, world_local, data);
 			} 
 			else 
 			{
