@@ -115,24 +115,5 @@ public class PointOfInterest : MonoBehaviour
 				, scale
 				, splat.is_tree);
 		}
-		Cage cage = objectOfInterestInstance.GetComponent<Cage>();
-		if(cage != null)
-		{
-			cage.Init();
-		}
-		TreasureChest chest = objectOfInterestInstance.GetComponent<TreasureChest>();
-		if(chest != null)
-		{
-			chest.seed = Mathf.FloorToInt(Random.value * 10000 + 1000);
-		}
-		SpawnPoint spawnPoint = objectOfInterestInstance.GetComponent<SpawnPoint>();
-		if(spawnPoint != null)
-		{
-			spawnPoint.Init();
-		}
-		Statue statue = objectOfInterestInstance.GetComponent<Statue> ();
-		if (statue != null) {
-			statue.Init (island);
-		}
 	}
 }

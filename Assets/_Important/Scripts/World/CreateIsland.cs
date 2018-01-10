@@ -42,7 +42,6 @@ public class CreateIsland : MonoBehaviour
 	public Biome biome;
     public Material mat;
     List<PointOfInterest> pois, specialPOIs;
-    SpawnPoint[] spawnPoints;
 
 	public int index;
 

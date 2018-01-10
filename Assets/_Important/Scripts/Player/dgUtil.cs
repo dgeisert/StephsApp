@@ -2,18 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.IO;
-using VRTK;
+//using System.IO;
 
 public class dgUtil
 {
-
-    public static Flytext SpawnFlytext(Color color, string text, Vector3 position)
-    {
-		Flytext flytext = dgUtil.Instantiate(PlayerManager.instance.flytext, position, Quaternion.identity, false, null).GetComponent<Flytext>();
-        flytext.Init(color, text);
-        return flytext;
-    }
 
 	public static string FormatTime(float seconds){
 		return (seconds >= 3600 ? (Mathf.FloorToInt (seconds / 3600).ToString () 
@@ -28,62 +20,6 @@ public class dgUtil
     {
         float factor = Mathf.Pow(10, decimals);
         return (Mathf.Round(value * factor) / factor).ToString();
-    }
-
-    public static float ClosestPlayerDistance(Transform tr)
-    {
-        Transform target = null;
-        foreach (OtherPlayerObject pm in PlayerManager.instance.players)
-        {
-            if (!pm.isDead)
-            {
-                if (target == null)
-                {
-                    target = pm.transform;
-                }
-                else
-                {
-                    if (Vector3.Distance(target.position, tr.position) > Vector3.Distance(pm.transform.position, tr.position))
-                    {
-                        target = pm.transform;
-                    }
-                }
-            }
-        }
-        if(target == null)
-        {
-            return 0;
-        }
-        return Vector3.Distance(target.position, tr.position);
-    }
-
-    public static Transform ClosestPlayer(Transform tr)
-    {
-        Transform target = null;
-        {
-            foreach (OtherPlayerObject pm in PlayerManager.instance.players)
-            {
-                if (!pm.isDead)
-                {
-                    if (target == null)
-                    {
-                        target = pm.transform;
-                    }
-                    else
-                    {
-                        if (Vector3.Distance(target.position, tr.position) > Vector3.Distance(pm.transform.position, tr.position))
-                        {
-                            target = pm.transform;
-                        }
-                    }
-                }
-            }
-        }
-        if (target == null)
-        {
-            return null;
-        }
-        return target;
     }
 
 	private static GameObject InstantiateLocalOnParent(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent, bool world_local, object[] data = null)
@@ -127,74 +63,6 @@ public class dgUtil
 			}
 		}
 	}
-
-    public static void Disable(GameObject go)
-    {
-        foreach (BaseWeapon component in go.GetComponentsInChildren<BaseWeapon>())
-        {
-            GameObject.Destroy(component);
-        }
-        foreach (PhotonTransformView component in go.GetComponentsInChildren<PhotonTransformView>())
-        {
-            GameObject.Destroy(component);
-        }
-        foreach (PhotonView component in go.GetComponentsInChildren<PhotonView>())
-        {
-            GameObject.Destroy(component);
-        }
-        foreach (RigidbodySync component in go.GetComponentsInChildren<RigidbodySync>())
-        {
-            GameObject.Destroy(component);
-        }
-        foreach (Rigidbody component in go.GetComponentsInChildren<Rigidbody>())
-        {
-            GameObject.Destroy(component);
-        }
-        foreach (MeshCollider component in go.GetComponentsInChildren<MeshCollider>())
-        {
-            GameObject.Destroy(component);
-        }
-        foreach (BoxCollider component in go.GetComponentsInChildren<BoxCollider>())
-        {
-            GameObject.Destroy(component);
-        }
-        foreach (SphereCollider component in go.GetComponentsInChildren<SphereCollider>())
-        {
-            GameObject.Destroy(component);
-        }
-        foreach (LineRenderer component in go.GetComponentsInChildren<LineRenderer>())
-        {
-            GameObject.Destroy(component);
-		}
-		foreach (BaseEnemy component in go.GetComponentsInChildren<BaseEnemy>())
-		{
-			GameObject.Destroy(component);
-		}
-		foreach (Animator component in go.GetComponentsInChildren<Animator>())
-		{
-			GameObject.Destroy(component);
-		}
-		foreach (CharacterController component in go.GetComponentsInChildren<CharacterController>())
-		{
-			GameObject.Destroy(component);
-		}
-		foreach (AudioSource component in go.GetComponentsInChildren<AudioSource>())
-		{
-			GameObject.Destroy(component);
-		}
-		foreach (VRTK.GrabAttachMechanics.VRTK_FixedJointGrabAttach component in go.GetComponentsInChildren<VRTK.GrabAttachMechanics.VRTK_FixedJointGrabAttach>())
-		{
-			GameObject.Destroy(component);
-		}
-		foreach (VRTK.SecondaryControllerGrabActions.VRTK_BaseGrabAction component in go.GetComponentsInChildren<VRTK.SecondaryControllerGrabActions.VRTK_BaseGrabAction>())
-		{
-			GameObject.Destroy(component);
-		}
-		foreach (VRTK.Examples.Controller_Hand component in go.GetComponentsInChildren<VRTK.Examples.Controller_Hand>())
-		{
-			GameObject.Destroy(component);
-		}
-    }
 
     public static void GhostMode(GameObject go)
     {
@@ -286,8 +154,6 @@ public class dgUtil
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
     public static void ResetUser()
     {
-        PlayerPrefs.DeleteAll();
-        PlayerManager.instance.ResetResources ();
 	}
 
 	public static void GoToScene(string scene)
@@ -301,7 +167,6 @@ public class dgUtil
 		
 	public static void GrantResource(string resource, int amount)
 	{
-		PlayerManager.instance.AddResource (resource, amount);
 	}
 	public static void Grant1000Gems()
 	{
@@ -314,51 +179,26 @@ public class dgUtil
 
     public static void KillAllEnemies()
     {
-        foreach (BaseEnemy baseEnemy in GameObject.FindObjectsOfType<BaseEnemy>())
-        {
-            if (!baseEnemy.isDestructible)
-            {
-                baseEnemy.TakeDamage(1000000);
-            }
-        }
     }
 
     public static void DestroyDestructibles()
     {
-        foreach (BaseEnemy baseEnemy in GameObject.FindObjectsOfType<BaseEnemy>())
-        {
-            if (baseEnemy.isDestructible)
-            {
-                baseEnemy.TakeDamage(1000000);
-            }
-        }
     }
 
     public static void Revive()
 	{
-		PlayerManager.instance.otherPlayerObject.Revive ();
 	}
 
 	public static void Die()
 	{
-		PlayerManager.instance.otherPlayerObject.TakeDamage (1000000);
 	}
 
 	public static void Heal()
 	{
-		PlayerManager.instance.otherPlayerObject.Heal (PlayerManager.instance.otherPlayerObject.maxHealth);
 	}
 
 	public static void GrantAllWeapons()
     {
-        PlayerManager.instance.AddWeapon("AxeBase.0.0");
-        PlayerManager.instance.AddWeapon("AxeBase.0.0");
-        PlayerManager.instance.AddWeapon("BowBase.0.0");
-        PlayerManager.instance.AddWeapon("SwordBase.0.0");
-        PlayerManager.instance.AddWeapon("DaggerBase.0.0");
-        PlayerManager.instance.AddWeapon("GunBase.0.0");
-        PlayerManager.instance.AddWeapon("ShieldBase.0.0");
-        PlayerManager.instance.AddWeapon("StaffBase.0.0");
     }
 
 	public static void GrantAllChests()
@@ -368,13 +208,14 @@ public class dgUtil
 
 	public static List<string> testData = new List<string> ();
 	public static int testCount = 0;
+	/*
 	public static void SaveTestData(List<string> saveData){
 		StreamWriter outStream = System.IO.File.CreateText(Application.dataPath +"TestData.csv");
 		foreach (string str in saveData) {
 			outStream.WriteLine (str);
 		}
 		outStream.Close();
-	}
+	}*/
 
     public static void GrantLevels() {
         PlayerPrefs.SetInt("currentLevel", 100);

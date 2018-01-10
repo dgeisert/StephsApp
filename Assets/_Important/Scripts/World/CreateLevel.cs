@@ -7,7 +7,6 @@ public class CreateLevel : MonoBehaviour
     public static CreateLevel instance;
 
 	public GameObject gameManager;
-    public LevelType levelType;
     public int level;
     public bool skipDataLoad = false;
     public GameObject islandBase, footprints, arbitrarySpawnPoint;
@@ -26,7 +25,6 @@ public class CreateLevel : MonoBehaviour
     public int specialValue, specialComplete = 0;
     public bool levelFailed = false;
     float levelStartTime;
-    public List<SpawnPoint> spawnPoints = new List<SpawnPoint>();
 	public int centerX, centerZ, tiles;
 	public float islandSize = 50;
 
@@ -64,7 +62,16 @@ public class CreateLevel : MonoBehaviour
 		centerZ = -1;
 		tiles = 3;
 		SetupAndCenterMap ();
-    }
+	}
+
+	public void CheckForAreaLoad(Vector3 cameraCenter){
+		if (Mathf.FloorToInt (cameraCenter.x / islandSize - 0.5f) != centerX 
+			|| Mathf.FloorToInt (cameraCenter.z / islandSize) != centerZ) {
+			centerX = Mathf.FloorToInt (cameraCenter.x / islandSize - 0.5f);
+			centerZ = Mathf.FloorToInt (cameraCenter.z / islandSize);
+			SetupAndCenterMap ();
+		}
+	}
 
 	void SetupAndCenterMap(){
 
@@ -130,61 +137,6 @@ public class CreateLevel : MonoBehaviour
 		}
     }
 
-    public void SurvivalSpawnEnemies()
-    {
-        if (enemies.Count > 100)
-        {
-            return;
-        }
-        int enemyCount = Mathf.FloorToInt(level / 2);
-        SpawnEnemies(enemyCount, true, 100);
-    }
-    public void Rescue()
-    {
-        specialComplete++;
-        SetMissionText(specialComplete.ToString() + " of " + specialValue.ToString() + " rescued");
-        RescueSpawnEnemies();
-        if (specialValue <= specialComplete)
-        {
-            Ship.instance.comet.SetActive(true);
-            Invoke("GoToExit", 2f);
-        }
-    }
-    void GoToExit()
-    {
-        SetMissionText("Head to your ship");
-    }
-    public void RescueSpawnEnemies()
-    {
-        int enemyCount = level + specialComplete;
-        SpawnEnemies(enemyCount, true, 50);
-    }
-    public void WaveSpawnEnemies()
-    {
-		if (specialValue == -1) {
-			PlayerManager.instance.infoCenterAlign.text = "Wave " + specialComplete;
-		} else {
-			PlayerManager.instance.infoCenterAlign.text = "Wave " + specialComplete + " of " + specialValue;
-		}
-        int enemyCount = level + specialComplete * 3;
-		if (levelType == LevelType.InfiniteWave) {
-			enemyCount += specialComplete * 8;
-		}
-        SpawnEnemies(enemyCount, true, 100);
-    }
-
-
-    public float IslandInitDistance = 100f;
-    public void OnTeleport(Vector3 playerPosition)
-    {
-        if (PlayerManager.instance != null && timeInLevel > 1)
-        {
-            dgUtil.Instantiate(footprints
-                , PlayerManager.instance.GetPlayerStandingPosition()
-                , PlayerManager.instance.playerHips.rotation);
-        }
-    }
-
 
     float timer;
     public void StartTimer(float time)
@@ -195,109 +147,11 @@ public class CreateLevel : MonoBehaviour
     }
     public void UpdateTimer()
     {
-        if (timer - (Time.time - levelStartTime) > 0)
-        {
-            PlayerManager.instance.infoLeftAlign.text = dgUtil.FormatTime(timer - (Time.time - levelStartTime));
-        }
-        else
-        {
-            Ship.instance.comet.SetActive(true);
-            SetMissionText("head to your ship");
-            if (levelType == LevelType.Survive)
-			{
-				if (Pet.instance.audioSource.clip != Pet.instance.clipSurvivalWaveComplete) {
-					Pet.instance.PlayAudio (Pet.instance.clipSurvivalWaveComplete);
-				}
-				CancelInvoke("SurvivalSpawnEnemies");
-				foreach (GameObject go in enemies) {
-					if (go != null) {
-						Destroy (go);
-					}
-				}
-                GameManager.instance.EnemyChecks = new List<System.Action>();
-            }
-            else
-            {
-
-            }
-        }
     }
 
     string missionText = "";
     public void SetMissionText(string text)
     {
         missionText = text;
-    }
-
-    public void CheckEnemies()
-    {
-        enemies.RemoveAll(item => item == null);
-        if (enemies.Count == 0)
-        {
-            specialComplete++;
-            if (specialValue < specialComplete && specialValue > 0)
-            {
-                Ship.instance.comet.SetActive(true);
-				Pet.instance.PlayAudio (Pet.instance.clipSurvivalWaveComplete);
-                SetMissionText("head to your ship");
-                CancelInvoke("CheckEnemies");
-            }
-            else
-            {
-				//spawn wave
-				Pet.instance.PlayAudio (Pet.instance.clipsNewWave);
-                WaveSpawnEnemies();
-            }
-        }
-    }
-
-    public void SpawnEnemies(int count, bool targetPlayer = false, float range = 0)
-    {
-        if (range > 1000 || spawnPoints.Count == 0)
-        {
-            Debug.LogError("Range too large, or no spawn points found");
-            return;
-        }
-        for (int i = 0; i < spawnPoints.Count; i++)
-        {
-            if(spawnPoints[i] == null)
-            {
-                spawnPoints.RemoveAt(i);
-                i--;
-            }
-        }
-        List<SpawnPoint> sps = spawnPoints;
-        if (range > 0)
-        {
-            sps = new List<SpawnPoint>();
-            foreach (SpawnPoint sp in spawnPoints)
-            {
-				float distanceFromPlayer = Vector3.Distance (sp.transform.position, PlayerManager.instance.otherPlayerObject.transform.position);
-                if (distanceFromPlayer <= range && distanceFromPlayer > 10)
-                {
-                    sps.Add(sp);
-                }
-            }
-        }
-        if (sps.Count == 0)
-        {
-            SpawnEnemies(count, targetPlayer, range + 50);
-            return;
-        }
-        else
-        {
-            float individualCount = count / sps.Count + 1;
-            foreach (SpawnPoint sp in sps)
-            {
-                List<BaseEnemy> bes = sp.Spawn(individualCount);
-                foreach (BaseEnemy be in bes)
-                {
-                    if (targetPlayer)
-                    {
-                        be.LockOnPlayer();
-                    }
-                }
-            }
-        }
     }
 }

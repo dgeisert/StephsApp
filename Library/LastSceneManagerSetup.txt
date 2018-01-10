@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/_Important/Scenes/Loading.unity
+- path: Assets/_Important/Scenes/islandgen.unity
   isLoaded: 1
   isActive: 1
