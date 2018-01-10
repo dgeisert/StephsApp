@@ -180,6 +180,6 @@ public class CreateIsland : MonoBehaviour
 		}
 		render.sharedMaterial = mat;
         assignMesh.RecalculateNormals();
-        go.AddComponent<MeshCollider>();
+        //go.AddComponent<MeshCollider>();
     }
 }

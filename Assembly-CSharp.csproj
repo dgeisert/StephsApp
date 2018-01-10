@@ -812,6 +812,7 @@
      <Compile Include="Assets\_Important\Scripts\Player\PlayerManager.cs" />
      <Compile Include="Assets\_Important\Scripts\Player\ResetUserTrigger.cs" />
      <Compile Include="Assets\_Important\Scripts\Player\Ship.cs" />
+     <Compile Include="Assets\_Important\Scripts\Player\TouchManager.cs" />
      <Compile Include="Assets\_Important\Scripts\Player\dgUtil.cs" />
      <Compile Include="Assets\_Important\Scripts\RecordingHelpers\BodySwitcher.cs" />
      <Compile Include="Assets\_Important\Scripts\RecordingHelpers\CameraRecording.cs" />
