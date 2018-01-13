@@ -33,6 +33,15 @@ public class Building : MonoBehaviour {
 		rate = Mathf.Min(nodes.Count, maxRate);
 		myNode.resource = producedResource;
 		myNode.item = gameObject;
+		for (int i = 0; i < size.x; i++) {
+			for (int j = 0; j < size.y; j++) {
+				CreateIsland.Node setNode = CreateLevel.instance.GetNode (transform.position + new Vector3 (i + 0.5f, 0, j + 0.5f));
+				setNode.occupied = true;
+				if (setNode != myNode) {
+					setNode.reference = myNode;
+				}
+			}
+		}
 		if (rate > 0) {
 			if (consumedResource.Count > 1) {
 				Invoke ("ResourceExchange", 10 / rate);

@@ -9,7 +9,11 @@ public class MenuManager : MonoBehaviour {
 
 	public GameObject backgroundClickBlocker;
 
-	public Button menu, build, command, move;
+	public Button menu, mode, next;
+	public List<Button> options, tabs;
+	public Text infoText;
+	public Image modeImage;
+	public Sprite moveSprite, buildSprite;
 
 	void Start(){
 		instance = this;
@@ -26,40 +30,68 @@ public class MenuManager : MonoBehaviour {
 	}
 
 	void ModeButtonsOff(){
-		build.gameObject.SetActive (false);
-		move.gameObject.SetActive (false);
-		command.gameObject.SetActive (false);
+		
 	}
 
 	public void ToggleBuildMode(){
-		build.gameObject.SetActive (false);
-		move.gameObject.SetActive (true);
-		command.gameObject.SetActive (false);
+		mode.onClick.RemoveAllListeners ();
+		mode.onClick.AddListener(ToggleMoveMode);
+		modeImage.sprite = moveSprite;
+		infoText.text = "Build " + ResourceManager.instance.currentBuilding.name;
 		TouchManager.instance.BuildModeToggle ();
+		SetItemButtons ();
 	}
 
 	public void ToggleMoveMode(){
-		build.gameObject.SetActive (true);
-		move.gameObject.SetActive (false);
-		command.gameObject.SetActive (false);
+		mode.onClick.RemoveAllListeners ();
+		mode.onClick.AddListener(ToggleBuildMode);
+		modeImage.sprite = buildSprite;
+		infoText.text = "";
 		TouchManager.instance.MoveModeToggle ();
+		SetItemButtons ();
 	}
 
 	public void ToggleCommandMode(){
-		build.gameObject.SetActive (false);
-		move.gameObject.SetActive (true);
-		command.gameObject.SetActive (false);
+		mode.onClick.RemoveAllListeners ();
+		mode.onClick.AddListener(ToggleMoveMode);
+		modeImage.sprite = moveSprite;
+		infoText.text = "";
+		TouchManager.instance.CommandModeToggle ();
+		SetItemButtons ();
 	}
 
-	public void GenericToggle(){
+	public void SetItemButtons(){
 		switch(TouchManager.instance.mode){
 		case TouchManager.Mode.Build:
-			int index = ResourceManager.instance.buildings.IndexOf (ResourceManager.instance.currentBuilding);
-			index++;
-			if (index >= ResourceManager.instance.buildings.Count) {
-				index = 0;
+			for (int i = 0; i < options.Count; i++) {
+				if (ResourceManager.instance.buildings.Count <= i) {
+					options [i].gameObject.SetActive (false);
+				}
+				else{
+					options [i].gameObject.SetActive (true);
+					options [i].gameObject.GetComponentInChildren<Image> ().sprite = 
+						ResourceManager.instance.resourceSprites [
+							ResourceManager.instance.buildings [i].GetComponent<Building>().producedResource];
+				}
 			}
+			break;
+		default:
+			for (int i = 0; i < options.Count; i++) {
+				options [i].gameObject.SetActive (false);
+			}
+			break;
+		}
+		SelectOption (0);
+	}
+
+	public void SelectOption(int index){
+		switch(TouchManager.instance.mode){
+		case TouchManager.Mode.Build:
 			ResourceManager.instance.currentBuilding = ResourceManager.instance.buildings [index];
+			foreach (Button b in options) {
+				b.GetComponentInChildren<Image> ().color = Color.white;
+			}
+			options [index].GetComponentInChildren<Image> ().color = Color.black;
 			break;
 		default:
 			break;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum Resource {
 	Open,
-	Food,
+	Grain,
 	Tree,
 	Logs,
 	Wood,
@@ -14,16 +14,21 @@ public enum Resource {
 	Grass,
 	Clay,
 	Brick,
-	Ore,
+	IronOre,
 	Iron,
+	Gold,
+	GoldOre,
 	Hides,
 	Leather,
-	People
+	People,
+	Fruit
 }
 
 public class ResourceManager : MonoBehaviour {
 
 	public static ResourceManager instance;
+	public List<Sprite> resourceSpritesInput;
+	public Dictionary<Resource, Sprite> resourceSprites;
 	public GameObject claimResourceParticles;
 	Dictionary<Resource, int> resourceCounts = new Dictionary<Resource, int>();
 	Dictionary<Resource, List<CreateIsland.Node>> resourceLocations = new Dictionary<Resource, List<CreateIsland.Node>> ();
@@ -33,6 +38,11 @@ public class ResourceManager : MonoBehaviour {
 	void Start(){
 		instance = this;
 		currentBuilding = buildings [0];
+		resourceSprites = new Dictionary<Resource, Sprite> ();
+		foreach (Sprite spr in resourceSpritesInput) {
+			//Debug.Log (spr.name);
+			resourceSprites.Add ((Resource)System.Enum.Parse(typeof(Resource), spr.name), spr);
+		}
 	}
 
 	public List<CreateIsland.Node> HighlightResource(List<Resource> rTypes, Vector3 center, float radius){

@@ -64,16 +64,16 @@ public class TouchManager : MonoBehaviour {
 				touchHeld = false;
 			}
 		} else {
-			if (Input.GetMouseButtonDown (0)) {
-				SingleTouchStart (new Vector2 (Input.mousePosition.x, Input.mousePosition.y));
-			}
 			if (Input.GetMouseButtonUp (0)) {
 				if (!CheckTap ()) {
 					CheckDrop ();
 				}
 				touchHeld = false;
 			}
-			if (Input.GetMouseButton (0)) {
+			else if (Input.GetMouseButtonDown (0)) {
+				SingleTouchStart (new Vector2 (Input.mousePosition.x, Input.mousePosition.y));
+			}
+			else if (Input.GetMouseButton (0)) {
 				SingleTouch (new Vector2 (Input.mousePosition.x, Input.mousePosition.y));
 			}
 			Zoom (Input.mouseScrollDelta.y / 4);
@@ -102,19 +102,11 @@ public class TouchManager : MonoBehaviour {
 			}
 			switch (mode) {
 			case Mode.Build:
-				CreateIsland.Node node = CreateLevel.instance.GetNode (hit.point + new Vector3(0.5f, 0, 0.5f));
+				CreateIsland.Node node = CreateLevel.instance.GetNode (hit.point + new Vector3 (0.5f, 0, 0.5f));
 				if (node != focusNode) {
 					focusPoint = hit.point;
 					focusNode = node;
-					draggingObject.transform.parent = focusNode.island.transform;
-					draggingObject.transform.localPosition = focusNode.GetPoint ();
-					draggingObject.gameObject.SetActive (draggingObject.CheckPlacement(focusPoint));
-					CreateLevel.instance.ResetHighlights ();
-					if (draggingObject.gameObject.activeSelf) {
-						ResourceManager.instance.HighlightResource (draggingObject.consumedResource
-							, hit.point + new Vector3((draggingObject.size.x - 1)/2, 0, (draggingObject.size.y - 1)/2)
-							, draggingObject.radius);
-					}
+					CheckNodePlacement (hit.point);
 				}
 				break;
 			case Mode.Move:
@@ -152,12 +144,7 @@ public class TouchManager : MonoBehaviour {
 				, Quaternion.identity
 				, true
 				, focusNode.island.transform).GetComponent<Building>();
-			draggingObject.gameObject.SetActive (draggingObject.CheckPlacement(focusPoint));
-			if (draggingObject.gameObject.activeSelf) {
-				ResourceManager.instance.HighlightResource (draggingObject.consumedResource
-					, hit.point + new Vector3((draggingObject.size.x - 1)/2, 0, (draggingObject.size.y - 1)/2)
-					, draggingObject.radius);
-			}
+			CheckNodePlacement (hit.point);
 			break;
 		case Mode.Move:
 			break;
@@ -180,17 +167,7 @@ public class TouchManager : MonoBehaviour {
 		if (touchTime < 0.2f && allowTap) {
 			switch (mode) {
 			case Mode.Build:
-				if (draggingObject != null) {
-					if (!focusNode.occupied) {
-						draggingObject.SetNodes(
-							ResourceManager.instance.ClaimResource (draggingObject.consumedResource
-								, focusPoint + new Vector3((draggingObject.size.x - 1)/2, 0, (draggingObject.size.y - 1)/2)
-								, draggingObject.radius, draggingObject),
-							focusNode);
-						draggingObject = null;
-						CreateLevel.instance.ResetHighlights ();
-					}
-				}
+				return PlaceBuilding ();
 				break;
 			case Mode.Move:
 				if (focusNode != null) {
@@ -211,18 +188,7 @@ public class TouchManager : MonoBehaviour {
 	bool CheckDrop(){
 		switch (mode) {
 		case Mode.Build:
-			if (draggingObject != null) {
-				if (!focusNode.occupied) {
-					draggingObject.SetNodes(
-						ResourceManager.instance.ClaimResource (draggingObject.consumedResource
-							, focusPoint + new Vector3((draggingObject.size.x - 1)/2, 0, (draggingObject.size.y - 1)/2)
-							, draggingObject.radius, draggingObject),
-						focusNode);
-					draggingObject = null;
-					CreateLevel.instance.ResetHighlights ();
-					return true;
-				}
-			}
+			return PlaceBuilding ();
 			break;
 		default:
 			break;
@@ -240,5 +206,42 @@ public class TouchManager : MonoBehaviour {
 
 	public void CommandModeToggle(){
 		mode = Mode.Command;
+	}
+
+	public bool CheckNodePlacement(Vector3 point){
+		draggingObject.transform.parent = focusNode.island.transform;
+		draggingObject.transform.localPosition = focusNode.GetPoint ();
+		draggingObject.gameObject.SetActive (draggingObject.CheckPlacement(focusPoint));
+		CreateLevel.instance.ResetHighlights ();
+		if (draggingObject.gameObject.activeSelf) {
+			ResourceManager.instance.HighlightResource (draggingObject.consumedResource
+				, point + new Vector3((draggingObject.size.x - 1)/2, 0, (draggingObject.size.y - 1)/2)
+				, draggingObject.radius);
+			return true;
+		}
+		return false;
+	}
+
+	public bool PlaceBuilding(){
+		if (draggingObject != null) {
+			draggingObject.transform.parent = focusNode.island.transform;
+			draggingObject.transform.localPosition = focusNode.GetPoint ();
+			draggingObject.gameObject.SetActive (draggingObject.CheckPlacement(focusPoint));
+			CreateLevel.instance.ResetHighlights ();
+			if (draggingObject.gameObject.activeSelf) {
+				draggingObject.SetNodes (
+					ResourceManager.instance.ClaimResource (draggingObject.consumedResource
+						, focusPoint + new Vector3 ((draggingObject.size.x - 1) / 2, 0, (draggingObject.size.y - 1) / 2)
+						, draggingObject.radius
+						, draggingObject)
+					, focusNode);
+				CreateLevel.instance.ResetHighlights ();
+				draggingObject = null;
+				return true;
+			} else {
+				Destroy (draggingObject.gameObject);
+			}
+		}
+		return false;
 	}
 }
