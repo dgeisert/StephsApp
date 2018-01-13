@@ -101,19 +101,6 @@ public class PointOfInterest : MonoBehaviour
     }
 
 	public void SetObject(CreateIsland island){
-		size = island.size;
-		objectOfInterestInstance = dgUtil.Instantiate(objectOfInterest, new Vector3(x - size / 2, -depression, z - size / 2), Quaternion.identity, true, island.top.transform);
-		objectOfInterestInstance.transform.localScale *= scale;
-		foreach(ProceduralSplat splat in objectOfInterestInstance.GetComponentsInChildren<ProceduralSplat>()) {
-			Vector3 setPosition = island.vertsTop [island.nodes [x, z].vert];
-			if (splat.transform != objectOfInterestInstance.transform) {
-				setPosition += splat.transform.localPosition;
-			}
-			splat.Init (
-				island
-				, setPosition
-				, scale
-				, splat.is_tree);
-		}
+		//redo
 	}
 }

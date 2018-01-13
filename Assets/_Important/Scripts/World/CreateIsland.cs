@@ -26,29 +26,71 @@ public class CreateIsland : MonoBehaviour
         public int vert = -1;
         public PointOfInterest poi;
         public int x, z;
+		public Vector3 GetPoint(){
+			return new Vector3 (x - CreateLevel.instance.islandSize / 2, y, z - CreateLevel.instance.islandSize / 2);
+		}
+		public Node reference;
+		public bool occupied = false, claimed = false;
+		public GameObject item;
+		public int splatIndexStart, splatIndexEnd;
+		public CreateIsland island;
+		public List<Color> colorHold;
+		public Dictionary<MeshRenderer, Material> matsHold;
+		public Resource resource;
+		public int resourceCount = 0;
+		public void Highlight(){
+			if (splatIndexEnd > 0) {
+				if (colorHold == null ? true : colorHold.Count == 0) {
+					colorHold = new List<Color> ();
+					for (int i = splatIndexStart; i <= splatIndexEnd; i++) {
+						colorHold.Add (island.colorListSplats [i]);
+						island.colorListSplats [i] = Color.yellow;
+					}
+					island.filterSplats.mesh.SetColors (island.colorListSplats);
+					CreateLevel.instance.highlightedNodes.Add (this);
+				}
+			} else {
+				matsHold = new Dictionary<MeshRenderer, Material>();
+				foreach (MeshRenderer renderer in item.GetComponentsInChildren<MeshRenderer>()) {
+					matsHold.Add (renderer, renderer.material);
+					renderer.material = island.highlightMaterial;
+				}
+				CreateLevel.instance.highlightedNodes.Add (this);
+			}
+		}
+		public void RemoveHighlight(){
+			if (splatIndexEnd > 0) {
+				for (int i = splatIndexStart; i <= splatIndexEnd; i++) {
+					island.colorListSplats [i] = colorHold[i - splatIndexStart];
+				}
+				colorHold.Clear ();
+			} else {
+				foreach (KeyValuePair<MeshRenderer, Material> kvp in matsHold) {
+					kvp.Key.material = kvp.Value;
+				}
+				matsHold.Clear ();
+			}
+			island.filterSplats.mesh.SetColors (island.colorListSplats);
+		}
     }
 
     public Node[,] nodes;
-	public List<Vector3> vertsSplats, vertsTop;
-	public List<Vector2> uvsSplats, uvsTop;
+	public List<Vector3> vertsSplats;
+	public List<Vector2> uvsSplats;
     int vert = 0;
-	public List<Color> colorListSplats, colorListTop;
-    List<Tri> trisTop;
-	public List<int> trianglesSplats, trianglesTop;
-    MeshRenderer rendererTop, rendererSplats;
-    MeshFilter filterTop, filterSplats;
-    public GameObject top, splatsObject;
+	public List<Color> colorListSplats;
+	public List<int> trianglesSplats;
+    MeshRenderer rendererSplats;
+    MeshFilter filterSplats;
+    public GameObject splatsObject;
     public int size = 10, randomSeed = 0;
 	public Biome biome;
-    public Material mat;
+	public Material mat, highlightMaterial;
     List<PointOfInterest> pois, specialPOIs;
 
 	public int index;
 
 	//these used to confirm connections across map
-	public CreateIsland fromIsland, closestIsland;
-	public bool closestSteps = false, fromSteps = false;
-	public GameObject stepIsland, lantern;
 
 	CreateLevel level;
 
@@ -74,7 +116,6 @@ public class CreateIsland : MonoBehaviour
 		specialPOIs = setSpecialPOIs == null ? new List<PointOfInterest>() : setSpecialPOIs;
 		MeshSetup();
 		AssignMesh(splatsObject, vertsSplats, colorListSplats, trianglesSplats, uvsSplats);
-		top.tag = "Teleportable";
         initialized = true;
 	}
 
@@ -91,24 +132,27 @@ public class CreateIsland : MonoBehaviour
 
     bool ExpandNodeMap(int i, int j)
     {
-        nodes[i, j] = new Node();
+		nodes[i, j] = new Node();
+		nodes[i, j].island = this;
         nodes[i, j].x = i;
         nodes[i, j].z = j;
 		nodes[i, j].vert = vert;
-        float topY = 0;
-		vertsTop.Add(new Vector3(i - size / 2, topY, j - size / 2));
-		uvsTop.Add (new Vector2(i * 2, j * 2));
-		colorListTop.Add (biome.colorTop);
 		bool spawned = false;
 		float scale = 15;
 		float offset = 12000;
 		float perlin = Mathf.PerlinNoise ((i + transform.position.x + offset) / scale, (j + transform.position.z + offset) / scale);
 		if (Random.value * 100 < biome.percentSplat && perlin > 0.85f)
 		{
+			nodes [i, j].splatIndexStart = colorListSplats.Count;
 			biome.splats[Mathf.FloorToInt(Random.value * biome.splats.Count)].Init(
 				this
-				, vertsTop[vert]
+				, new Vector3(i - size / 2, 0, j - size / 2)
 				, ((biome.splatMaxSize - biome.splatMinSize) * Random.value + biome.splatMinSize) * (perlin - 0.8f) / 0.15f);
+			nodes [i, j].occupied = true;
+			nodes [i, j].item = splatsObject;
+			nodes [i, j].splatIndexEnd = colorListSplats.Count - 1;
+			nodes [i, j].resource = Resource.Boulder;
+			nodes [i, j].resourceCount = -1;
 		}
 		if (!spawned)
 		{
@@ -117,12 +161,18 @@ public class CreateIsland : MonoBehaviour
 			perlin = Mathf.PerlinNoise ((i + transform.position.x + offset) / scale, (j + transform.position.z + offset) / scale);
 			if (Random.value * 100 < biome.percentTree && perlin > 0.6f)
 			{
+				nodes [i, j].splatIndexStart = colorListSplats.Count;
 				biome.trees[Mathf.FloorToInt(Random.value * biome.trees.Count)].Init(
 					this
-					, vertsTop[vert]
+					, new Vector3(i - size / 2, 0, j - size / 2)
 					, ((biome.treeMaxSize - biome.treeMinSize) * Random.value + biome.treeMinSize) * (perlin - 0.4f)
 					, true);
 				spawned = true;
+				nodes [i, j].occupied = true;
+				nodes [i, j].item = splatsObject;
+				nodes [i, j].splatIndexEnd = colorListSplats.Count - 1;
+				nodes [i, j].resource = Resource.Tree;
+				nodes [i, j].resourceCount = -1;
 			}
 			spawned = true;
 		}
@@ -137,8 +187,6 @@ public class CreateIsland : MonoBehaviour
 		vertsSplats = new List<Vector3>();
 		nodes = new Node[size, size];
 		vert = 0;
-		vertsTop = new List<Vector3>();
-		colorListTop = new List<Color> ();
 
 
         Random.InitState(randomSeed);
@@ -168,8 +216,8 @@ public class CreateIsland : MonoBehaviour
 	void AssignMesh(GameObject go, List<Vector3> verts, List<Color> colors, List<int> tris, List<Vector2> uvs)
     {
         Mesh assignMesh = new Mesh();
-        MeshFilter filter = go.AddComponent<MeshFilter>();
-        filter.mesh = assignMesh;
+        filterSplats = go.AddComponent<MeshFilter>();
+		filterSplats.mesh = assignMesh;
         MeshRenderer render = go.AddComponent<MeshRenderer>();
 		assignMesh.SetVertices(verts);
 		assignMesh.SetTriangles(tris, 0);
@@ -180,5 +228,21 @@ public class CreateIsland : MonoBehaviour
 		render.sharedMaterial = mat;
         assignMesh.RecalculateNormals();
         //go.AddComponent<MeshCollider>();
-    }
+	}
+
+	public Node GetNode(Vector3 point){
+		point -= transform.position;
+		point += Vector3.one * size / 2;
+		//Debug.Log (Mathf.RoundToInt (point.x) + ", " + Mathf.RoundToInt (point.z));
+		return nodes [Mathf.FloorToInt (point.x)
+			, Mathf.FloorToInt (point.z)];
+	}
+
+	public Node GetNode(Vector2 point){
+		point -= new Vector2(transform.position.x, transform.position.z);
+		point += Vector2.one * size / 2;
+		//Debug.Log (Mathf.RoundToInt (point.x) + ", " + Mathf.RoundToInt (point.z));
+		return nodes [Mathf.FloorToInt (point.x)
+			, Mathf.FloorToInt (point.y)];
+	}
 }

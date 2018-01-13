@@ -64,21 +64,6 @@ public class dgUtil
 		}
 	}
 
-    public static void GhostMode(GameObject go)
-    {
-        Material ghostModeMaterial = Resources.Load<Material>("GhostModeMaterial");
-        foreach (MeshRenderer component in go.GetComponentsInChildren<MeshRenderer>())
-        {
-            List<Material> mats = new List<Material>();
-            foreach(Material mat in component.materials)
-            {
-                mats.Add(ghostModeMaterial);
-            }
-            component.materials = mats.ToArray();
-            component.UpdateGIMaterials();
-        }
-    }
-
     public static void Shuffle<T>(List<T> list)
     {
         int n = list.Count;
@@ -90,122 +75,9 @@ public class dgUtil
             list[i] = value;
         }
     }
-
-	static bool enemiesSet = false;
-	static List<string> enemyList = new List<string> ();
-	public static Dictionary<string, int> enemyValues = new Dictionary<string, int>();
-	public static string RandomEnemy(){
-		if(!enemiesSet){
-			enemyValues.Add ("spriteRed", 0);
-			enemyValues.Add ("golemRed", 2);
-			enemyValues.Add ("fireMageRed", 5);
-			enemyValues.Add ("eyeLaserRed", 4);
-			enemyValues.Add ("bombRed", 1);
-			enemyValues.Add ("bullRed", 4);
-			enemyValues.Add ("spriteYellow", 3);
-			enemyValues.Add ("golemYellow", 6);
-			enemyValues.Add ("fireMageYellow", 8);
-			enemyValues.Add ("eyeLaserYellow", 8);
-			enemyValues.Add ("bombYellow", 4);
-			enemyValues.Add ("bullYellow", 7);
-			enemyValues.Add ("spriteOrange", 3);
-			enemyValues.Add ("golemOrange", 8);
-			enemyValues.Add ("fireMageOrange", 7);
-			enemyValues.Add ("eyeLaserOrange", 7);
-			enemyValues.Add ("bombOrange", 3);
-			enemyValues.Add ("bullOrange", 9);
-			enemyValues.Add ("spritePurple", 6);
-			enemyValues.Add ("golemPurple", 12);
-			enemyValues.Add ("fireMagePurple", 15);
-			enemyValues.Add ("eyeLaserPurple", 12);
-			enemyValues.Add ("bombPurple", 5);
-			enemyValues.Add ("bullPurple", 14);
-			enemyValues.Add ("spriteWhite", 9);
-			enemyValues.Add ("golemWhite", 16);
-			enemyValues.Add ("fireMageWhite", 22);
-			enemyValues.Add ("eyeLaserWhite", 18);
-			enemyValues.Add ("bombWhite", 9);
-			enemyValues.Add ("bullWhite", 18);
-			foreach (KeyValuePair<string, int> kvp in enemyValues) {
-				enemyList.Add (kvp.Key);
-			}
-			enemiesSet = true;
-		}
-		int playingLevel = PlayerPrefs.GetInt ("playingLevel");
-		if (CreateLevel.instance != null) {
-			if (CreateLevel.instance.badWordSpawn > 0) {
-				return CreateLevel.instance.badWordEnemy.name;
-			}
-		}
-		if (playingLevel <= 0) {
-			return "spriteRed";
-		}
-		string selectEnemy = "";
-		while (selectEnemy == "") {
-			string selection = enemyList[Mathf.FloorToInt(Random.value * enemyList.Count)];
-			if (enemyValues [selection] <= playingLevel / 2) {
-				selectEnemy = selection;
-			}
-		}
-		return selectEnemy;
-	}
-
     // PAST HERE IS THE ADMIN SECTION
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-    public static void ResetUser()
-    {
-	}
-
-	public static void GoToScene(string scene)
-	{
-		SceneManager.LoadScene (scene);
-	}
-	public static void GoToMainMenu()
-	{
-        GameManager.instance.LoadMainMenu();
-	}
-		
-	public static void GrantResource(string resource, int amount)
-	{
-	}
-	public static void Grant1000Gems()
-	{
-		GrantResource ("gems", 1000);
-	}
-	public static void Grant1000Coins()
-	{
-		GrantResource ("coins", 1000);
-    }
-
-    public static void KillAllEnemies()
-    {
-    }
-
-    public static void DestroyDestructibles()
-    {
-    }
-
-    public static void Revive()
-	{
-	}
-
-	public static void Die()
-	{
-	}
-
-	public static void Heal()
-	{
-	}
-
-	public static void GrantAllWeapons()
-    {
-    }
-
-	public static void GrantAllChests()
-	{
-
-	}
-
+	//dev
 	public static List<string> testData = new List<string> ();
 	public static int testCount = 0;
 	/*
@@ -217,32 +89,7 @@ public class dgUtil
 		outStream.Close();
 	}*/
 
-    public static void GrantLevels() {
-        PlayerPrefs.SetInt("currentLevel", 100);
-    }
 #else
-	public static List<string> testData = new List<string> ();
-	public static int testCount = 0;
-	public static void SaveTestData(List<string> testData){}
-	public static void ResetUser(){}
-	public static void GrantLevels(){}
-	public static void GoToScene(string scene){}
-	public static void GoToMainMenu()
-	{
-        GameManager.instance.LoadMainMenu();
-	}
-	public static void Grant1000Coins(){}
-	public static void Grant1000Gems(){}
-	public static void GrantResource(string resource, int amount){}
-	public static void KillAllEnemies(){}
-    public static void DestroyDestructibles(){}
-    public static void Revive()
-	{
-		PlayerManager.instance.otherPlayerObject.Revive ();
-	}
-	public static void Die(){}
-	public static void Heal(){}
-	public static void GrantAllWeapons(){}
-	public static void GrantAllChests(){}
+	//prod
 #endif
 }

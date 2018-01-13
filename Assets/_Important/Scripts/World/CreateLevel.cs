@@ -11,11 +11,7 @@ public class CreateLevel : MonoBehaviour
     public bool skipDataLoad = false;
     public GameObject islandBase, footprints, arbitrarySpawnPoint;
     public int islandCount = 100, seed, actualIslandCount;
-    public float sizeMin, sizeMax, perlinCrunch = 500f, perlinVoidThreshhold = 0.4f, islandEnemyStartCount = 0, timeInLevel;
-    float perlinOffsetYX = 0, perlinOffsetYZ = 0
-        , perlinOffsetX = 0, perlinOffsetY = 0
-        , perlinOffsetVoidX = 0, perlinOffsetVoidZ = 0
-        , yScale = 0;
+    public float timeInLevel;
     Vector3 zeroing = Vector3.zero;
     public List<Biome> biomes;
     public Biome simpleBiome;
@@ -52,7 +48,6 @@ public class CreateLevel : MonoBehaviour
 
     void Awake()
     {
-
         CreateLevel.instance = this;
         Random.InitState(seed);
 		levelStartTime = Time.time;
@@ -149,9 +144,43 @@ public class CreateLevel : MonoBehaviour
     {
     }
 
-    string missionText = "";
-    public void SetMissionText(string text)
-    {
-        missionText = text;
-    }
+	public CreateIsland.Node GetNode(Vector3 point){
+		return islands[new Vector2(Mathf.RoundToInt(point.x/islandSize)
+			, Mathf.RoundToInt(point.z/islandSize))
+		].GetNode (point);
+	}
+	public CreateIsland.Node GetNode(Vector2 point){
+		return islands[new Vector2(Mathf.RoundToInt(point.x/islandSize)
+			, Mathf.RoundToInt(point.y/islandSize))
+		].GetNode (point);
+	}
+
+	public List<CreateIsland.Node> highlightedNodes = new List<CreateIsland.Node> ();
+	public void ResetHighlights(){
+		foreach (CreateIsland.Node node in highlightedNodes) {
+			node.RemoveHighlight ();
+		}
+		highlightedNodes = new List<CreateIsland.Node> ();
+	}
+
+	public List<CreateIsland.Node> GetNodes(Vector3 point, float radius, bool square = false){
+		List<CreateIsland.Node> nodes = new List<CreateIsland.Node> ();
+		for (float i = -radius; i < radius; i++) {
+			for (float j = -radius; j < radius; j++) {
+				if (square || new Vector2 (i, j).magnitude < radius) {
+					Vector3 point2 = new Vector3 (point.x + i, point.y, point.z + j);
+					nodes.Add(islands[new Vector2(Mathf.RoundToInt(point2.x/islandSize)
+						, Mathf.RoundToInt(point2.z/islandSize))
+					].GetNode (point2));
+				}
+			}
+		}
+		return nodes;
+	}
+
+	public CreateIsland GetIsland(Vector3 point){
+		return islands [new Vector2 (Mathf.RoundToInt (point.x / islandSize)
+			, Mathf.RoundToInt (point.z / islandSize))
+		];
+	}
 }
