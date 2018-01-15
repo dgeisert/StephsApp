@@ -6,56 +6,35 @@ public class CreateLevel : MonoBehaviour
 {
     public static CreateLevel instance;
 
-	public GameObject gameManager;
-    public int level;
     public bool skipDataLoad = false;
-    public GameObject islandBase, footprints, arbitrarySpawnPoint;
-    public int islandCount = 100, seed, actualIslandCount;
-    public float timeInLevel;
-    Vector3 zeroing = Vector3.zero;
+    public GameObject islandBase;
+    public int seed;
     public List<Biome> biomes;
-    public Biome simpleBiome;
 	public Dictionary<Vector2, CreateIsland> islands;
     List<PointOfInterest> specialPOIs;
     public List<GameObject> enemies;
-    public int specialValue, specialComplete = 0;
-    public bool levelFailed = false;
-    float levelStartTime;
 	public int centerX, centerZ, tiles;
 	public float islandSize = 50;
 
-    //special POIs
-    public PointOfInterest rescueObject;
-    public GameObject ship, thisWayMarker;
-    public Vector3 exitShipPosition, enterShipPosition;
-
-    public int badWordSpawn;
-    public GameObject badWordEnemy;
-
-    //this section for stats
-    public float enemiesKilled = 0, totalEnemies = 0, damageTaken = 0, healing = 0;
-    public void SaveStats()
-    {
-        PlayerPrefs.SetFloat("completedKills", enemiesKilled);
-        PlayerPrefs.SetFloat("completedTotalEnemies", totalEnemies);
-        PlayerPrefs.SetFloat("completedDamage", damageTaken);
-        PlayerPrefs.SetFloat("completedHealing", healing);
-        PlayerPrefs.SetFloat("completedTime", timeInLevel);
-    }
-
-    //this section for bosses
-    public List<PointOfInterest> bossPOI;
+	//this section for the ground mesh
+	Mesh groundMesh;
+	public MeshFilter groundFilter;
+	public MeshRenderer groundRenderer;
+	public Material groundMat;
+	public MeshCollider groundCollider;
 
     void Awake()
     {
         CreateLevel.instance = this;
         Random.InitState(seed);
-		levelStartTime = Time.time;
 
 		islands = new Dictionary<Vector2, CreateIsland>();
 		centerX = -1;
 		centerZ = -1;
 		tiles = 3;
+
+		groundMesh = new Mesh ();
+
 		SetupAndCenterMap ();
 	}
 
@@ -69,7 +48,6 @@ public class CreateLevel : MonoBehaviour
 	}
 
 	void SetupAndCenterMap(){
-
 		for (int i = centerX; i < centerX + tiles; i++) {
 			int j = centerZ - 1;
 			if (islands.ContainsKey (new Vector2 (i, j))) {
@@ -109,40 +87,48 @@ public class CreateLevel : MonoBehaviour
 				}
 			}
 		}
+		transform.position = new Vector3 (centerX * (int)islandSize, 0, centerZ * (int)islandSize);
+		List<Vector3> verts = new List<Vector3> ();
+		List<Vector3> riverVerts = new List<Vector3> ();
+		List<Color> colors = new List<Color> ();
+		List<Color> riverColors = new List<Color> ();
+		List<int> tris = new List<int> ();
+		List<Vector2> uvs = new List<Vector2> ();
+		List<int> riverTris = new List<int> ();
+		for (int i = centerX * (int)islandSize; i < centerX * (int)islandSize + tiles * (int)islandSize; i++) {
+			for (int j = centerZ * (int)islandSize; j < centerZ * (int)islandSize + tiles * (int)islandSize; j++) {
+				float scale = 50;
+				float offset = 1000;
+				float perlin = Mathf.PerlinNoise ((i + offset) / scale, (j + offset) / scale);
+				float perlin2 = Mathf.PerlinNoise ((i + offset) / scale / 2, (j + offset) / scale / 2);
+				if ((i + j * perlin2) > (perlin * 10 + 15)
+				   && (i + j * perlin2) < (perlin * 10 + 30)) {
+					verts.Add (new Vector3(i - 25 - transform.position.x, -1, j - 25 - transform.position.z));
+				} else {
+					verts.Add (new Vector3(i - 25 - transform.position.x, 0, j - 25 - transform.position.z));
+				}
+				uvs.Add (new Vector2 (i, j));
+				if (j > centerZ * (int)islandSize && i > centerX * (int)islandSize) {
+					tris.Add ((verts.Count - 1) - 1);
+					tris.Add ((verts.Count - 1) - tiles * (int)islandSize);
+					tris.Add ((verts.Count - 1));
+					tris.Add ((verts.Count - 1) - 1);
+					tris.Add ((verts.Count - 1) - 1 - tiles * (int)islandSize);
+					tris.Add ((verts.Count - 1) - tiles * (int)islandSize);
+				}
+			}
+		}
+		groundFilter.mesh = groundMesh;
+		groundCollider.sharedMesh = groundMesh;
+		groundMesh.SetVertices(verts);
+		groundMesh.SetTriangles(tris, 0);
+		groundMesh.SetColors (colors);
+		if (verts.Count == uvs.Count) {
+			groundMesh.SetUVs (0, uvs);
+		}
+		groundRenderer.sharedMaterial = groundMat;
+		groundMesh.RecalculateNormals();
 	}
-
-    public void Update()
-    {
-		timeInLevel = Time.time - levelStartTime;
-		if(Input.GetKeyDown(KeyCode.W)){
-			centerZ++;
-			SetupAndCenterMap ();
-		}
-		if(Input.GetKeyDown(KeyCode.S)){
-			centerZ--;
-			SetupAndCenterMap ();
-		}
-		if(Input.GetKeyDown(KeyCode.A)){
-			centerX--;
-			SetupAndCenterMap ();
-		}
-		if(Input.GetKeyDown(KeyCode.D)){
-			centerX++;
-			SetupAndCenterMap ();
-		}
-    }
-
-
-    float timer;
-    public void StartTimer(float time)
-    {
-        levelStartTime = Time.time;
-        timer = time;
-        InvokeRepeating("UpdateTimer", 0.5f, 1);
-    }
-    public void UpdateTimer()
-    {
-    }
 
 	public CreateIsland.Node GetNode(Vector3 point){
 		return islands[new Vector2(Mathf.RoundToInt(point.x/islandSize)

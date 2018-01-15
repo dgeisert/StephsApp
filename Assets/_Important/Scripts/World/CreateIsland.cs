@@ -138,34 +138,48 @@ public class CreateIsland : MonoBehaviour
         nodes[i, j].z = j;
 		nodes[i, j].vert = vert;
 		bool spawned = false;
-		float scale = 15;
-		float offset = 12000;
+		float scale = 50;
+		float offset = 1000;
 		float perlin = Mathf.PerlinNoise ((i + transform.position.x + offset) / scale, (j + transform.position.z + offset) / scale);
-		if (Random.value * 100 < biome.percentSplat && perlin > 0.85f)
-		{
-			nodes [i, j].splatIndexStart = colorListSplats.Count;
-			biome.splats[Mathf.FloorToInt(Random.value * biome.splats.Count)].Init(
-				this
-				, new Vector3(i - size / 2, 0, j - size / 2)
+		float perlin2 = Mathf.PerlinNoise ((i + transform.position.x + offset) / scale / 2, (j + transform.position.z + offset) / scale / 2);
+
+		if (!spawned) {
+			if((transform.position.x + i + (transform.position.z + j) * perlin2) > (perlin * 10 + 15)
+				&& (transform.position.x + i + (transform.position.z + j) * perlin2) < (perlin * 10 + 30)){
+				nodes [i, j].occupied = true;
+				spawned = true;
+			}
+		}
+		if (!spawned) {
+			scale = 15;
+			offset = 12000;
+			perlin = Mathf.PerlinNoise ((i + transform.position.x + offset) / scale, (j + transform.position.z + offset) / scale);
+			if (Random.value * 100 < biome.percentSplat && perlin > 0.85f) {
+				nodes [i, j].splatIndexStart = colorListSplats.Count;
+				biome.splats [Mathf.FloorToInt (Random.value * biome.splats.Count)].Init (
+					this
+				, new Vector3 (i - size / 2, 0, j - size / 2)
 				, ((biome.splatMaxSize - biome.splatMinSize) * Random.value + biome.splatMinSize) * (perlin - 0.8f) / 0.15f);
-			nodes [i, j].occupied = true;
-			nodes [i, j].item = splatsObject;
-			nodes [i, j].splatIndexEnd = colorListSplats.Count - 1;
-			nodes [i, j].resource = Resource.Boulder;
-			nodes [i, j].resourceCount = -1;
+				nodes [i, j].occupied = true;
+				nodes [i, j].item = splatsObject;
+				nodes [i, j].splatIndexEnd = colorListSplats.Count - 1;
+				nodes [i, j].resource = Resource.Boulder;
+				nodes [i, j].resourceCount = -1;
+				spawned = true;
+			}
 		}
 		if (!spawned)
 		{
 			scale = 20;
 			offset = 10000;
 			perlin = Mathf.PerlinNoise ((i + transform.position.x + offset) / scale, (j + transform.position.z + offset) / scale);
-			if (Random.value * 100 < biome.percentTree && perlin > 0.6f)
+			if (Random.value * 100 < biome.percentTree && perlin > 0.5f)
 			{
 				nodes [i, j].splatIndexStart = colorListSplats.Count;
 				biome.trees[Mathf.FloorToInt(Random.value * biome.trees.Count)].Init(
 					this
 					, new Vector3(i - size / 2, 0, j - size / 2)
-					, ((biome.treeMaxSize - biome.treeMinSize) * Random.value + biome.treeMinSize) * (perlin - 0.4f)
+					, ((biome.treeMaxSize - biome.treeMinSize) * Random.value + biome.treeMinSize) * (perlin - 0.35f)
 					, true);
 				spawned = true;
 				nodes [i, j].occupied = true;

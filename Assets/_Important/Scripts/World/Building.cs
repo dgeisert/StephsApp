@@ -6,23 +6,42 @@ public class Building : MonoBehaviour {
 
 	public List<Resource> consumedResource = new List<Resource> ();
 	public Resource producedResource;
-	Dictionary<Resource, int> buildCost;
 	public List<int> consumeRate = new List<int> ();
 	public int produceRate = 1; 
 	public List<CreateIsland.Node> nodes = new List<CreateIsland.Node>();
 	public CreateIsland.Node myNode;
-	public int rate = 1, maxRate = 10, maxHold = 20;
-	public float radius = 10;
+	public int maxRate = 10, maxHold = 20, starting = 0;
+	public float rate = 1, radius = 10, baseRate = 10;
 	public TextMesh text;
 	public bool claimSources = false;
 	public Vector2 size = Vector2.one;
 	public GameObject radiusVisualizer;
+	bool initialized = false;
+	public Material highlightBadMaterial;
+	public Dictionary<MeshRenderer, Material>  matsHold;
+
+	public List<Resource> buildResource;
+	public List<int> buildCost;
 
 	void Start(){
+		if (!initialized) {
+			Init ();
+			SetNodes(
+				ResourceManager.instance.ClaimResource (consumedResource
+					, transform.position + new Vector3 ((size.x - 1) / 2, 0, (size.y - 1) / 2)
+					, radius
+					, this)
+				, CreateLevel.instance.GetNode (transform.position + new Vector3 (0.5f, 0, 0.5f)));
+			AddResource (starting);
+		}
+	}
+
+	public void Init(){
 		ParticleSystem.ShapeModule shape = radiusVisualizer.GetComponent<ParticleSystem> ().shape;
 		shape.radius = radius;
 		radiusVisualizer.transform.localPosition = new Vector3 ((size.x - 1) / 2, 0.5f, (size.y - 1) / 2);
 		radiusVisualizer.SetActive (true);
+		initialized = true;
 	}
 
 	public void SetNodes(List<CreateIsland.Node> setNodes, CreateIsland.Node setMyNode){
@@ -44,12 +63,12 @@ public class Building : MonoBehaviour {
 		}
 		if (rate > 0) {
 			if (consumedResource.Count > 1) {
-				Invoke ("ResourceExchange", 10 / rate);
+				Invoke ("ResourceExchange", baseRate / rate);
 			} else {
 				if (consumeRate [0] == 0) {
-					Invoke ("SimplestExchange", 10 / rate);
+					Invoke ("SimplestExchange", baseRate / rate);
 				} else {
-					Invoke ("SimpleExchange", 10 / rate);
+					Invoke ("SimpleExchange", baseRate / rate);
 				}
 			}
 		}
@@ -68,16 +87,16 @@ public class Building : MonoBehaviour {
 
 	public void SimplestExchange(){
 		if (!CheckResourceCap ()) {
-			Invoke ("SimplestExchange", 10/rate);
+			Invoke ("SimplestExchange", baseRate/rate);
 			return;
 		}
 		AddResource (produceRate);
-		Invoke ("SimplestExchange", 10/rate);
+		Invoke ("SimplestExchange", baseRate/rate);
 	}
 
 	public void SimpleExchange(){
 		if (!CheckResourceCap ()) {
-			Invoke ("SimpleExchange", 10/rate);
+			Invoke ("SimpleExchange", baseRate/rate);
 			return;
 		}
 		int count = 0;
@@ -100,12 +119,12 @@ public class Building : MonoBehaviour {
 				}
 			}
 		}
-		Invoke ("SimpleExchange", 10/rate);
+		Invoke ("SimpleExchange", baseRate/rate);
 	}
 
 	public void ResourceExchange(){
 		if (!CheckResourceCap ()) {
-			Invoke ("ResourceExchange", 10/rate);
+			Invoke ("ResourceExchange", baseRate/rate);
 			return;
 		}
 		bool canExchange = true;
@@ -143,7 +162,7 @@ public class Building : MonoBehaviour {
 			}
 			AddResource (produceRate);
 		}
-		Invoke ("ResourceExchange", 10/rate);
+		Invoke ("ResourceExchange", baseRate/rate);
 	}
 
 	public void AddResource(int toAdd){
@@ -153,5 +172,23 @@ public class Building : MonoBehaviour {
 
 	public bool CheckResourceCap(){
 		return myNode.resourceCount + produceRate <= maxHold;
+	}
+
+	public void BadHighlight(){
+		if (matsHold == null ? true : matsHold.Count == 0) {
+			matsHold = new Dictionary<MeshRenderer, Material> ();
+			foreach (MeshRenderer renderer in GetComponentsInChildren<MeshRenderer>()) {
+				matsHold.Add (renderer, renderer.material);
+				renderer.material = highlightBadMaterial;
+			}
+		}
+	}
+	public void RemoveBadHighlight(){
+		if (matsHold != null) {
+			foreach (KeyValuePair<MeshRenderer, Material> kvp in matsHold) {
+				kvp.Key.material = kvp.Value;
+			}
+			matsHold.Clear ();
+		}
 	}
 }

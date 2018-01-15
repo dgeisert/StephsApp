@@ -30,12 +30,12 @@ public class ResourceManager : MonoBehaviour {
 	public List<Sprite> resourceSpritesInput;
 	public Dictionary<Resource, Sprite> resourceSprites;
 	public GameObject claimResourceParticles;
-	Dictionary<Resource, int> resourceCounts = new Dictionary<Resource, int>();
+	public Dictionary<Resource, int> resourceCounts = new Dictionary<Resource, int>();
 	Dictionary<Resource, List<CreateIsland.Node>> resourceLocations = new Dictionary<Resource, List<CreateIsland.Node>> ();
 	public List<GameObject> buildings;
 	public GameObject currentBuilding;
 
-	void Start(){
+	public void Init(){
 		instance = this;
 		currentBuilding = buildings [0];
 		resourceSprites = new Dictionary<Resource, Sprite> ();
@@ -115,7 +115,9 @@ public class ResourceManager : MonoBehaviour {
 					}
 				}
 				nodes.Add (maxNode);
-				AddResource (rType, -Mathf.Min (amount, maxNode.resourceCount), maxNode);
+				int deduct = -Mathf.Min (amount, maxNode.resourceCount);
+				AddResource (rType, deduct, maxNode);
+				amount += deduct;
 			}
 		}
 		return nodes;

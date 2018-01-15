@@ -15,9 +15,17 @@ public class MenuManager : MonoBehaviour {
 	public Image modeImage;
 	public Sprite moveSprite, buildSprite;
 
-	void Start(){
+	public void Init(){
 		instance = this;
 		ToggleMoveMode ();
+	}
+
+	public void Update(){
+		///* fps
+		if(Mathf.FloorToInt(Time.time * 30) % 30 == 0){
+			infoText.text = dgUtil.FormatNum(1 / Time.deltaTime, 0);
+		}
+		//*/
 	}
 
 	public void ToggleMenu(){

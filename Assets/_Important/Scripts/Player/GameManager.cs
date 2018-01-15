@@ -37,6 +37,9 @@ public class GameManager : MonoBehaviour
     }
 
     bool initialized = false;
+	public MenuManager menuManager;
+	public ResourceManager resourceManager;
+	public TouchManager touchManager;
     public void Init()
 	{
 		if (GameManager.instance != null) {
@@ -46,7 +49,16 @@ public class GameManager : MonoBehaviour
         if (initialized)
         {
             return;
-        }
+		}
+		if (resourceManager != null) {
+			resourceManager.Init ();
+		}
+		if (touchManager != null) {
+			touchManager.Init ();
+		}
+		if (menuManager != null) {
+			menuManager.Init ();
+		}
         initialized = true;
         EnemyChecks = new List<Action>();
         resources = new Dictionary<string, GameObject>();

@@ -26,7 +26,9 @@ public class TouchManager : MonoBehaviour {
 	Vector3 focusPoint;
 	public Vector3 cameraCenter;
 
-	void Start(){
+	public PolyWater watertest;
+
+	public void Init(){
 		instance = this;
 		speed = transform.position.y / Screen.dpi / 1.5f;
 		camera = gameObject.GetComponent<Camera> ();
@@ -34,6 +36,7 @@ public class TouchManager : MonoBehaviour {
 		RaycastHit hit = new RaycastHit ();
 		Physics.Raycast (new Ray (transform.position, transform.forward), out hit, 200);
 		cameraCenter = hit.point;
+		watertest.Init (camera);
 	}
 
 	void Update(){
@@ -88,6 +91,7 @@ public class TouchManager : MonoBehaviour {
 		Physics.Raycast (new Ray (transform.position, transform.forward), out hit, 200);
 		cameraCenter = hit.point;
 		particleObject.transform.position = hit.point;
+		watertest.transform.position = new Vector3 (hit.point.x, -0.5f, hit.point.z + 15);
 		CreateLevel.instance.CheckForAreaLoad (hit.point);
 	}
 
@@ -143,7 +147,8 @@ public class TouchManager : MonoBehaviour {
 				, focusNode.GetPoint ()
 				, Quaternion.identity
 				, true
-				, focusNode.island.transform).GetComponent<Building>();
+				, focusNode.island.transform).GetComponent<Building> ();
+			draggingObject.Init ();
 			CheckNodePlacement (hit.point);
 			break;
 		case Mode.Move:
@@ -211,7 +216,23 @@ public class TouchManager : MonoBehaviour {
 	public bool CheckNodePlacement(Vector3 point){
 		draggingObject.transform.parent = focusNode.island.transform;
 		draggingObject.transform.localPosition = focusNode.GetPoint ();
-		draggingObject.gameObject.SetActive (draggingObject.CheckPlacement(focusPoint));
+		if (draggingObject.CheckPlacement (focusPoint)) {
+			bool hasResources = true;
+			for (int i = 0; i < draggingObject.buildResource.Count; i++) {
+				if (ResourceManager.instance.resourceCounts [draggingObject.buildResource [i]] < draggingObject.buildCost [i]) {
+					hasResources = false;
+					break;
+				}
+			}
+			if (hasResources) {
+				draggingObject.RemoveBadHighlight ();
+			}
+			else{
+				draggingObject.BadHighlight ();
+			}
+		} else {
+			draggingObject.BadHighlight ();
+		}
 		CreateLevel.instance.ResetHighlights ();
 		if (draggingObject.gameObject.activeSelf) {
 			ResourceManager.instance.HighlightResource (draggingObject.consumedResource
@@ -224,11 +245,21 @@ public class TouchManager : MonoBehaviour {
 
 	public bool PlaceBuilding(){
 		if (draggingObject != null) {
+			bool hasResources = true;
+			for (int i = 0; i < draggingObject.buildResource.Count; i++) {
+				if (ResourceManager.instance.resourceCounts [draggingObject.buildResource [i]] < draggingObject.buildCost [i]) {
+					hasResources = false;
+					break;
+				}
+			}
 			draggingObject.transform.parent = focusNode.island.transform;
 			draggingObject.transform.localPosition = focusNode.GetPoint ();
 			draggingObject.gameObject.SetActive (draggingObject.CheckPlacement(focusPoint));
 			CreateLevel.instance.ResetHighlights ();
-			if (draggingObject.gameObject.activeSelf) {
+			if (draggingObject.CheckPlacement (focusPoint) && hasResources) {
+				for (int i = 0; i < draggingObject.buildResource.Count; i++) {
+					ResourceManager.instance.RemoveResources (draggingObject.buildResource [i], draggingObject.buildCost [i]);
+				}
 				draggingObject.SetNodes (
 					ResourceManager.instance.ClaimResource (draggingObject.consumedResource
 						, focusPoint + new Vector3 ((draggingObject.size.x - 1) / 2, 0, (draggingObject.size.y - 1) / 2)
@@ -236,12 +267,15 @@ public class TouchManager : MonoBehaviour {
 						, draggingObject)
 					, focusNode);
 				CreateLevel.instance.ResetHighlights ();
+				draggingObject.RemoveBadHighlight ();
 				draggingObject = null;
+				focusNode = null;
 				return true;
 			} else {
 				Destroy (draggingObject.gameObject);
+				focusNode = null;
 			}
 		}
-		return false;
+		return true;
 	}
 }

@@ -4,27 +4,19 @@ using UnityEngine;
 
 public class Biome : MonoBehaviour
 {
-	public int requiredLevel;
     public float percentTree = 2f, treeMinSize = 0.5f, treeMaxSize = 1.5f;
 	public float percentSplat = 2f, splatMinSize = 0.5f, splatMaxSize = 1.5f;
 	public List<ProceduralSplat> splats;
 	public List<ProceduralSplat> trees;
-    public Color colorTop, colorBottom;
-	public float spaciness = 0.5f, perlinCrunch = 10f, perlinOffset = 0f, heightMod = 2f, centerBias = 1f, wiggle = 0.2f;
 	public List<PointOfInterest> pois;
 	public List<PointOfInterest> importantPois;
     public float poiSpacing = 15;
-    public GameObject particles;
 	public string biomeName;
     CreateIsland island;
 
     public void Init(float size, Biome baseBiome, CreateIsland setIsland)
     {
 		biomeName = baseBiome.name;
-        perlinCrunch = 5f / size;
-        perlinOffset = Random.value * 1000;
-        heightMod = size / 3f;
-		centerBias = Mathf.Pow(size, 0.25f);
 		pois = new List<PointOfInterest>();
 		importantPois = new List<PointOfInterest>();
 		foreach(PointOfInterest poi in baseBiome.GetComponents<PointOfInterest>())
@@ -40,15 +32,13 @@ public class Biome : MonoBehaviour
 					}
 				}
 			} else {
-				if (poi.requiredLevel <= CreateLevel.instance.level) {
-					for (int i = 0; i < poi.maxPerIsland; i++) {
-						PointOfInterest newPoi = gameObject.AddComponent<PointOfInterest> ();
-						newPoi.Init (poi);
-						if (poi.important) {
-							importantPois.Add (newPoi);
-						} else {
-							pois.Add (newPoi);
-						}
+				for (int i = 0; i < poi.maxPerIsland; i++) {
+					PointOfInterest newPoi = gameObject.AddComponent<PointOfInterest> ();
+					newPoi.Init (poi);
+					if (poi.important) {
+						importantPois.Add (newPoi);
+					} else {
+						pois.Add (newPoi);
 					}
 				}
 			}
@@ -65,17 +55,12 @@ public class Biome : MonoBehaviour
 			}
 		}
         poiSpacing = 10 + (baseBiome.poiSpacing * size / 100);
-        spaciness = baseBiome.spaciness;
-        wiggle = baseBiome.wiggle;
-        colorTop = baseBiome.colorTop;
-        colorBottom = baseBiome.colorBottom;
         percentTree = baseBiome.percentTree;
         treeMinSize = baseBiome.treeMinSize;
         treeMaxSize = baseBiome.treeMaxSize;
         percentSplat = baseBiome.percentSplat;
         splatMaxSize = baseBiome.splatMaxSize;
 		splatMinSize = baseBiome.splatMinSize;
-		particles = baseBiome.particles;
         island = setIsland;
     }
 
