@@ -82,7 +82,7 @@ public class CreateIsland : MonoBehaviour
 	public List<int> trianglesSplats;
     MeshRenderer rendererSplats;
     MeshFilter filterSplats;
-    public GameObject splatsObject;
+    public GameObject splatsObject, waterObject, waterPrefab;
     public int size = 10, randomSeed = 0;
 	public Biome biome;
 	public Material mat, highlightMaterial;
@@ -144,8 +144,12 @@ public class CreateIsland : MonoBehaviour
 		float perlin2 = Mathf.PerlinNoise ((i + transform.position.x + offset) / scale / 2, (j + transform.position.z + offset) / scale / 2);
 
 		if (!spawned) {
-			if((transform.position.x + i + (transform.position.z + j) * perlin2) > (perlin * 10 + 15)
-				&& (transform.position.x + i + (transform.position.z + j) * perlin2) < (perlin * 10 + 30)){
+			if((transform.position.x + i + (transform.position.z + j) * perlin2) > (perlin * 10 + 14)
+				&& (transform.position.x + i + (transform.position.z + j) * perlin2) < (perlin * 10 + 31 + Mathf.Abs((transform.position.z + j) / 40))){
+				if (waterObject == null) {
+					waterObject = dgUtil.Instantiate (waterPrefab, new Vector3(0, -0.5f, 0), Quaternion.identity, true, transform);
+					waterObject.GetComponent<PolyWater> ().Init (level.camera);
+				}
 				nodes [i, j].occupied = true;
 				spawned = true;
 			}

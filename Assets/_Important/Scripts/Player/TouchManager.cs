@@ -36,7 +36,7 @@ public class TouchManager : MonoBehaviour {
 		RaycastHit hit = new RaycastHit ();
 		Physics.Raycast (new Ray (transform.position, transform.forward), out hit, 200);
 		cameraCenter = hit.point;
-		watertest.Init (camera);
+		//watertest.Init (camera);
 	}
 
 	void Update(){
@@ -91,7 +91,7 @@ public class TouchManager : MonoBehaviour {
 		Physics.Raycast (new Ray (transform.position, transform.forward), out hit, 200);
 		cameraCenter = hit.point;
 		particleObject.transform.position = hit.point;
-		watertest.transform.position = new Vector3 (hit.point.x, -0.5f, hit.point.z + 15);
+		//watertest.transform.position = new Vector3 (hit.point.x, -0.5f, hit.point.z + 15);
 		CreateLevel.instance.CheckForAreaLoad (hit.point);
 	}
 

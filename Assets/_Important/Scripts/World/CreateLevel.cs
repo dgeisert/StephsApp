@@ -22,6 +22,7 @@ public class CreateLevel : MonoBehaviour
 	public MeshRenderer groundRenderer;
 	public Material groundMat;
 	public MeshCollider groundCollider;
+	public Camera camera;
 
     void Awake()
     {
@@ -102,7 +103,7 @@ public class CreateLevel : MonoBehaviour
 				float perlin = Mathf.PerlinNoise ((i + offset) / scale, (j + offset) / scale);
 				float perlin2 = Mathf.PerlinNoise ((i + offset) / scale / 2, (j + offset) / scale / 2);
 				if ((i + j * perlin2) > (perlin * 10 + 15)
-				   && (i + j * perlin2) < (perlin * 10 + 30)) {
+					&& (i + j * perlin2) < (perlin * 10 + 30 + Mathf.Abs(j / 40))) {
 					verts.Add (new Vector3(i - 25 - transform.position.x, -1, j - 25 - transform.position.z));
 				} else {
 					verts.Add (new Vector3(i - 25 - transform.position.x, 0, j - 25 - transform.position.z));
