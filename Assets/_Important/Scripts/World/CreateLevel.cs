@@ -11,9 +11,11 @@ public class CreateLevel : MonoBehaviour
     public int seed;
     public List<Biome> biomes;
 	public Dictionary<Vector2, CreateIsland> islands;
+	public List<CreateIsland> activeIslands = new List<CreateIsland>();
     List<PointOfInterest> specialPOIs;
     public List<GameObject> enemies;
 	public int centerX, centerZ, tiles;
+	public Material waterMat;
 	public float islandSize = 50;
 
 	//this section for the ground mesh
@@ -39,6 +41,10 @@ public class CreateLevel : MonoBehaviour
 		SetupAndCenterMap ();
 	}
 
+	void Update(){
+		waterMat.SetTextureOffset("_MainTex", new Vector2(Mathf.Cos(Time.time / 10), Mathf.Sin(Time.time / 10)));
+	}
+
 	public void CheckForAreaLoad(Vector3 cameraCenter){
 		if (Mathf.FloorToInt (cameraCenter.x / islandSize - 0.5f) != centerX 
 			|| Mathf.FloorToInt (cameraCenter.z / islandSize) != centerZ) {
@@ -49,34 +55,19 @@ public class CreateLevel : MonoBehaviour
 	}
 
 	void SetupAndCenterMap(){
-		for (int i = centerX; i < centerX + tiles; i++) {
-			int j = centerZ - 1;
-			if (islands.ContainsKey (new Vector2 (i, j))) {
-				islands [new Vector2 (i, j)].gameObject.SetActive (false);
-			}
-		}
-		for (int i = centerX; i < centerX + tiles; i++) {
-			int j = centerZ + tiles;
-			if (islands.ContainsKey (new Vector2 (i, j))) {
-				islands [new Vector2 (i, j)].gameObject.SetActive (false);
-			}
-		}
-		for (int j = centerZ; j < centerZ + tiles; j++) {
-			int i = centerX - 1;
-			if (islands.ContainsKey (new Vector2 (i, j))) {
-				islands [new Vector2 (i, j)].gameObject.SetActive (false);
-			}
-		}
-		for (int j = centerZ; j < centerZ + tiles; j++) {
-			int i = centerX + tiles;
-			if (islands.ContainsKey (new Vector2 (i, j))) {
-				islands [new Vector2 (i, j)].gameObject.SetActive (false);
+		foreach(CreateIsland active in activeIslands){
+			if(!(active.x >= centerX
+				&& active.z >= centerZ
+				&& active.x <= centerX + tiles - 1
+				&& active.z <= centerZ + tiles - 1)){
+				active.gameObject.SetActive (false);
 			}
 		}
 		for (int i = centerX; i < centerX + tiles; i++) {
 			for (int j = centerZ; j < centerZ + tiles; j++) {
 				if (islands.ContainsKey (new Vector2 (i, j))) {
-					islands[new Vector2(i, j)].Init (this, specialPOIs);
+					islands[new Vector2(i, j)].Init (this, specialPOIs, i, j);
+					activeIslands.Add (islands [new Vector2 (i, j)]);
 				} else {
 					CreateIsland island = dgUtil.Instantiate (islandBase, new Vector3 (i * islandSize, 0, j * islandSize), Quaternion.identity).GetComponent<CreateIsland> ();
 					islands.Add (new Vector2 (i, j), island);
@@ -84,29 +75,34 @@ public class CreateLevel : MonoBehaviour
 					island.randomSeed = i * 100 + j;
 					island.biome = island.gameObject.AddComponent<Biome> ();
 					island.biome.Init (island.size, biomes [Mathf.FloorToInt (Random.value * biomes.Count)], island);
-					island.Init (this, specialPOIs);
+					island.Init (this, specialPOIs, i, j);
+					activeIslands.Add (island);
 				}
 			}
 		}
 		transform.position = new Vector3 (centerX * (int)islandSize, 0, centerZ * (int)islandSize);
 		List<Vector3> verts = new List<Vector3> ();
-		List<Vector3> riverVerts = new List<Vector3> ();
 		List<Color> colors = new List<Color> ();
-		List<Color> riverColors = new List<Color> ();
 		List<int> tris = new List<int> ();
 		List<Vector2> uvs = new List<Vector2> ();
-		List<int> riverTris = new List<int> ();
 		for (int i = centerX * (int)islandSize; i < centerX * (int)islandSize + tiles * (int)islandSize; i++) {
 			for (int j = centerZ * (int)islandSize; j < centerZ * (int)islandSize + tiles * (int)islandSize; j++) {
 				float scale = 50;
 				float offset = 1000;
 				float perlin = Mathf.PerlinNoise ((i + offset) / scale, (j + offset) / scale);
 				float perlin2 = Mathf.PerlinNoise ((i + offset) / scale / 2, (j + offset) / scale / 2);
+				float perlin3 = Mathf.PerlinNoise ((i + offset) / scale * 25, (j + offset) / scale * 25) / 3;
 				if ((i + j * perlin2) > (perlin * 10 + 15)
 					&& (i + j * perlin2) < (perlin * 10 + 30 + Mathf.Abs(j / 40))) {
-					verts.Add (new Vector3(i - 25 - transform.position.x, -1, j - 25 - transform.position.z));
+					verts.Add (new Vector3(i - 25 - transform.position.x, -1 + perlin3, j - 25 - transform.position.z));
+					colors.Add (new Color (0.9f, 0.9f, 0.7f));
+				} else if ((i + j * perlin2) > (perlin * 10 + 13.5f)
+					&& (i + j * perlin2) < (perlin * 10 + 31.5f + Mathf.Abs(j / 40))) {
+					verts.Add (new Vector3(i - 25 - transform.position.x, 0 + perlin3, j - 25 - transform.position.z));
+					colors.Add (new Color (0.9f, 0.9f, 0.7f));
 				} else {
-					verts.Add (new Vector3(i - 25 - transform.position.x, 0, j - 25 - transform.position.z));
+					verts.Add (new Vector3(i - 25 - transform.position.x, 0 + perlin3, j - 25 - transform.position.z));
+					colors.Add (new Color ((perlin + 0.25f) / 5f, (perlin + 0.25f) / 1f, (perlin + 0.25f) / 5f));
 				}
 				uvs.Add (new Vector2 (i, j));
 				if (j > centerZ * (int)islandSize && i > centerX * (int)islandSize) {

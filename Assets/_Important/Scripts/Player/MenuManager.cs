@@ -83,6 +83,13 @@ public class MenuManager : MonoBehaviour {
 				}
 			}
 			break;
+		case TouchManager.Mode.Move:
+			for (int i = 1; i < options.Count; i++) {
+				options [i].gameObject.SetActive (false);
+			}
+			options [0].gameObject.SetActive (true);
+			//set icon
+			break;
 		default:
 			for (int i = 0; i < options.Count; i++) {
 				options [i].gameObject.SetActive (false);
@@ -100,6 +107,15 @@ public class MenuManager : MonoBehaviour {
 				b.GetComponentInChildren<Image> ().color = Color.white;
 			}
 			options [index].GetComponentInChildren<Image> ().color = Color.black;
+			break;
+		case TouchManager.Mode.Move:
+			switch (index) {
+			case 0:
+				TouchManager.instance.SetCameraToHome ();
+				break;
+			default:
+				break;
+			}
 			break;
 		default:
 			break;

@@ -124,4 +124,12 @@ public class GameManager : MonoBehaviour
         GameManager.isLoading = false;
         SceneManager.LoadScene(levelToLoad);
     }
+		
+	public static Dictionary<Vector2, List<String>> saveData = new Dictionary<Vector2, List<string>>();
+	public static void Save(){
+		
+	}
+	public static void Load(){
+
+	}
 }

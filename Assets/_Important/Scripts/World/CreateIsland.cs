@@ -23,8 +23,6 @@ public class CreateIsland : MonoBehaviour
     public class Node
     {
         public float y;
-        public int vert = -1;
-        public PointOfInterest poi;
         public int x, z;
 		public Vector3 GetPoint(){
 			return new Vector3 (x - CreateLevel.instance.islandSize / 2, y, z - CreateLevel.instance.islandSize / 2);
@@ -87,6 +85,7 @@ public class CreateIsland : MonoBehaviour
 	public Biome biome;
 	public Material mat, highlightMaterial;
     List<PointOfInterest> pois, specialPOIs;
+	public int x, z;
 
 	public int index;
 
@@ -96,22 +95,14 @@ public class CreateIsland : MonoBehaviour
 
 	public bool initialized = false;
 
-    private void Start()
-    {
-		if(GameManager.GetScene() != "islandgen")
-		{
-			gameObject.AddComponent<Biome> ().Init (size, biome, this);
-			biome = gameObject.GetComponent<Biome> ();
-            Init(null, null);
-        }
-    }
-
-	public void Init(CreateLevel levelSet, List<PointOfInterest> setSpecialPOIs)
+	public void Init(CreateLevel levelSet, List<PointOfInterest> setSpecialPOIs, int setX, int setZ)
 	{
 		if (initialized) {
 			gameObject.SetActive (true);
 			return;
 		}
+		x = setX;
+		z = setZ;
 		level = levelSet;
 		specialPOIs = setSpecialPOIs == null ? new List<PointOfInterest>() : setSpecialPOIs;
 		MeshSetup();
@@ -136,7 +127,6 @@ public class CreateIsland : MonoBehaviour
 		nodes[i, j].island = this;
         nodes[i, j].x = i;
         nodes[i, j].z = j;
-		nodes[i, j].vert = vert;
 		bool spawned = false;
 		float scale = 50;
 		float offset = 1000;
@@ -148,7 +138,6 @@ public class CreateIsland : MonoBehaviour
 				&& (transform.position.x + i + (transform.position.z + j) * perlin2) < (perlin * 10 + 31 + Mathf.Abs((transform.position.z + j) / 40))){
 				if (waterObject == null) {
 					waterObject = dgUtil.Instantiate (waterPrefab, new Vector3(0, -0.5f, 0), Quaternion.identity, true, transform);
-					waterObject.GetComponent<PolyWater> ().Init (level.camera);
 				}
 				nodes [i, j].occupied = true;
 				spawned = true;

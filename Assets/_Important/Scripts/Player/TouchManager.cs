@@ -17,6 +17,7 @@ public class TouchManager : MonoBehaviour {
 	public Mode mode = Mode.Move;
 	public Camera camera;
 	public Vector2 startTouch;
+	Vector3 startFocusPoint;
 	float cameraMaxHeight = 40, cameraMinHeight = 10;
 	public bool touchHeld = false, positionChange = false, zooming = false, allowTap = true;
 	public float speed = 0.5f, touchTime;
@@ -36,7 +37,12 @@ public class TouchManager : MonoBehaviour {
 		RaycastHit hit = new RaycastHit ();
 		Physics.Raycast (new Ray (transform.position, transform.forward), out hit, 200);
 		cameraCenter = hit.point;
+		startFocusPoint = hit.point;
 		//watertest.Init (camera);
+	}
+
+	public void SetCameraToHome(){
+		transform.position = startFocusPoint + (transform.position - cameraCenter);
 	}
 
 	void Update(){

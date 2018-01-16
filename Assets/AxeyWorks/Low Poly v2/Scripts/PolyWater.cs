@@ -13,8 +13,9 @@ public class PolyWater : MonoBehaviour
     public bool ForceFlatShading = true;
 	public float waveShape;
     Mesh _mesh;
-    Vector3[] _verts;
+	Vector3[] _verts;
 	Vector2[] _uvs;
+	Vector2[] base_uvs;
 
 	public void Init(Camera camera)
     {
@@ -31,33 +32,32 @@ public class PolyWater : MonoBehaviour
         _mesh.RecalculateNormals();
         _verts = _mesh.vertices;
 		_uvs = _mesh.uv;
+		base_uvs = _mesh.uv;
         return mf;
     }
 
     void CalcWave()
 	{
-		float flowZ = Mathf.Sin (Time.time * WaveSpeed) * WaveHeight;
-		float flowX = Mathf.Cos (Time.time * WaveSpeed) * WaveHeight;
+		/*
         for (var i = 0; i < _verts.Length; i++)
         {
 			var uv = _uvs [i];
-			uv.y += flowZ;
-			uv.x += flowX;
-			/*
+			uv.y = base_uvs[i].y + Mathf.Sin (Time.time * WaveSpeed) * WaveHeight;
+			uv.x = base_uvs[i].x + Mathf.Cos (Time.time * WaveSpeed) * WaveHeight;
 			var v = _verts[i];
 			v.y = 0;
 			v.y = WaveHeight * Mathf.PerlinNoise(WaveSpeed * (v.x + transform.position.x + Time.time),
 				WaveSpeed * (v.z + transform.position.z + Time.time));
             _verts[i] = v;
-            */
 			_uvs [i] = uv;
         }
 		_mesh.uv = _uvs;
         //_mesh.vertices = _verts;
         //_mesh.RecalculateNormals();
-        //_mesh.MarkDynamic();
+        _mesh.MarkDynamic();
 
-        //GetComponent<MeshFilter>().sharedMesh = _mesh;
+        GetComponent<MeshFilter>().sharedMesh = _mesh;
+		*/
     }
 
 	void OnDisable(){
