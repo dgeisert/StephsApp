@@ -166,4 +166,17 @@ public class CreateLevel : MonoBehaviour
 			, Mathf.RoundToInt (point.z / islandSize))
 		];
 	}
+
+	public void Load(){
+		foreach (KeyValuePair<Vector2Int, Dictionary<Vector2Int, string>> kvp in GameManager.saveData) {
+			foreach (KeyValuePair<Vector2Int, string> kvp2 in kvp.Value) {
+				if (islands.ContainsKey (kvp.Key)) {
+					islands [kvp.Key].nodes [kvp2.Key.x, kvp2.Key.y].Load (kvp2.Value);
+				} else {
+					//load in any island that has something on it
+					Debug.Log ("no island " + kvp.Key.ToString ());
+				}
+			}
+		}
+	}
 }

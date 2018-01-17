@@ -27,8 +27,6 @@ public class TouchManager : MonoBehaviour {
 	Vector3 focusPoint;
 	public Vector3 cameraCenter;
 
-	public PolyWater watertest;
-
 	public void Init(){
 		instance = this;
 		speed = transform.position.y / Screen.dpi / 1.5f;
@@ -38,7 +36,6 @@ public class TouchManager : MonoBehaviour {
 		Physics.Raycast (new Ray (transform.position, transform.forward), out hit, 200);
 		cameraCenter = hit.point;
 		startFocusPoint = hit.point;
-		//watertest.Init (camera);
 	}
 
 	public void SetCameraToHome(){
@@ -90,6 +87,15 @@ public class TouchManager : MonoBehaviour {
 		if (positionChange) {
 			CheckForAreaLoad ();
 		}
+		if(Input.GetKeyDown(KeyCode.S)){
+			GameManager.Save ();
+		}
+		if(Input.GetKeyDown(KeyCode.D)){
+			GameManager.Load ();
+		}
+		if(Input.GetKeyDown(KeyCode.F)){
+			GameManager.ClearData ();
+		}
 	}
 
 	void CheckForAreaLoad(){
@@ -97,7 +103,6 @@ public class TouchManager : MonoBehaviour {
 		Physics.Raycast (new Ray (transform.position, transform.forward), out hit, 200);
 		cameraCenter = hit.point;
 		particleObject.transform.position = hit.point;
-		//watertest.transform.position = new Vector3 (hit.point.x, -0.5f, hit.point.z + 15);
 		CreateLevel.instance.CheckForAreaLoad (hit.point);
 	}
 

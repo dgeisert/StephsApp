@@ -63,8 +63,6 @@
      <Compile Include="Assets\_Important\Scripts\World\Critter.cs" />
      <Compile Include="Assets\_Important\Scripts\World\PointOfInterest.cs" />
      <Compile Include="Assets\_Important\Scripts\World\ProceduralSplat.cs" />
-     <Compile Include="Assets\AxeyWorks\Low Poly v2\Scripts\AxeyWorksMobileDistortion.cs" />
-     <Compile Include="Assets\AxeyWorks\Low Poly v2\Scripts\PolyWater.cs" />
      <Compile Include="Assets\Easy Save 2\ES2Init.cs" />
      <Compile Include="Assets\Easy Save 2\Examples\Creating an Automatic Save Structure\ES2UniqueID.cs" />
      <Compile Include="Assets\Easy Save 2\Examples\Creating an Automatic Save Structure\UniqueGameLogic.cs" />
@@ -91,7 +89,6 @@
      <None Include="Assets\Easy Save 2\changelog.txt" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_UnlitSolidColor.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_ReferenceUnlit.shader" />
-     <None Include="Assets\AxeyWorks\Low Poly v2\Shaders\AxeyWorksPolyWaterBlendFoam.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\DiffuseTextureBlend.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_StandardVertexColor.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_VertexPicker.shader" />
@@ -108,7 +105,6 @@
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_NormalPreview.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_ScrollHighlight.shader" />
      <None Include="Assets\ProCore\ProBuilder\readme.txt" />
-     <None Include="Assets\AxeyWorks\Low Poly v2\Shaders\AxeyWorksDistortion.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_SmoothingPreview.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

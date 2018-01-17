@@ -36,6 +36,35 @@ public class CreateIsland : MonoBehaviour
 		public Dictionary<MeshRenderer, Material> matsHold;
 		public Resource resource;
 		public int resourceCount = 0;
+		public void Load(string str){
+			resource = (Resource)System.Enum.Parse(typeof(Resource), str.Split ('.') [1]);
+			foreach (GameObject go in ResourceManager.instance.buildings) {
+				if (go.name == str.Split ('.') [0]) {
+					Building b = dgUtil.Instantiate (go, GetPoint (), Quaternion.identity, true, island.transform).GetComponent<Building>();
+					b.Load (this, str.Split ('.') [3], int.Parse (str.Split ('.') [2]));
+				}
+			}
+		}
+		public string Save(){
+			string toSave = "";
+			toSave += item == null ? "" : item.name;
+			toSave += ".";
+			toSave += resource == null ? "" : resource.ToString();
+			toSave += ".";
+			toSave += resourceCount.ToString();
+			toSave += ".";
+			Building b = item.GetComponent<Building> ();
+			string str = "";
+			if (b != null) {
+				foreach(Node n in b.nodes){
+					str += n.island.x + "-" + n.island.z + "-" + n.x + "-" + n.z + "-";
+				}
+			}
+			toSave += str;
+			toSave += ".";
+			GameManager.AddSaveData (new Vector2Int (island.x, island.z), new Vector2Int (x, z), toSave);
+			return toSave;
+		}
 		public void Highlight(){
 			if (splatIndexEnd > 0) {
 				if (colorHold == null ? true : colorHold.Count == 0) {

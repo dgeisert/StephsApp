@@ -72,6 +72,7 @@ public class Building : MonoBehaviour {
 				}
 			}
 		}
+		Invoke ("Save", 0.1f);
 	}
 
 	public bool CheckPlacement(Vector3 point){
@@ -168,6 +169,7 @@ public class Building : MonoBehaviour {
 	public void AddResource(int toAdd){
 		//Debug.Log ("Adding " + toAdd.ToString () + " " + producedResource.ToString () + " to " + myNode.resourceCount.ToString ());
 		ResourceManager.instance.AddResource(producedResource, toAdd, myNode);
+		Invoke ("Save", 0.1f);
 	}
 
 	public bool CheckResourceCap(){
@@ -190,5 +192,24 @@ public class Building : MonoBehaviour {
 			}
 			matsHold.Clear ();
 		}
+	}
+
+	public void Load(CreateIsland.Node node, string nodes, int toAdd){
+		Init ();
+		string[] nodeIndex = nodes.Split('-');
+		List<CreateIsland.Node> setNodes = new List<CreateIsland.Node> ();
+		for (int i = 0; i < nodeIndex.Length - 2; i += 4) {
+			CreateIsland.Node claimNode = CreateLevel.instance.islands [
+				new Vector2 (int.Parse (nodeIndex [i]), int.Parse (nodeIndex [i + 1]))]
+				.nodes [int.Parse (nodeIndex [i + 2]), int.Parse (nodeIndex [i + 3])];
+			claimNode.claimed = true;
+			setNodes.Add(claimNode);
+		}
+		SetNodes (setNodes, node);
+		AddResource (toAdd);
+	}
+
+	public void Save(){
+		myNode.Save ();
 	}
 }
