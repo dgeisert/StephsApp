@@ -21,8 +21,8 @@ public class Building : MonoBehaviour {
 	public Material highlightBadMaterial;
 	public Dictionary<MeshRenderer, Material>  matsHold;
 
-	public List<Resource> buildResource;
-	public List<int> buildCost;
+	public Resource buildResource;
+	public int buildCost;
 
 	void Start(){
 		if (!initialized) {
@@ -49,6 +49,14 @@ public class Building : MonoBehaviour {
 		//Debug.Log ("Set Nodes");
 		radiusVisualizer.SetActive(false);
 		nodes = setNodes;
+		foreach (CreateIsland.Node n in nodes) {
+			if (n.claimants == null) {
+				n.claimants = new List<Building> ();
+			}
+			if (!n.claimants.Contains (this)) {
+				n.claimants.Add (this);
+			}
+		}
 		myNode = setMyNode;
 		rate = Mathf.Min(nodes.Count, maxRate);
 		myNode.resource = producedResource;
@@ -217,6 +225,6 @@ public class Building : MonoBehaviour {
 	public void SetBuildMode(){
 		ResourceManager.instance.currentBuilding = gameObject;
 		MenuManager.instance.CloseMenu ();
-		TouchManager.instance.BuildModeToggle ();
+		MenuManager.instance.ToggleBuildMode ();
 	}
 }

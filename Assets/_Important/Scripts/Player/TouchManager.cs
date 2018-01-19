@@ -23,8 +23,10 @@ public class TouchManager : MonoBehaviour {
 	public float speed = 0.5f, touchTime;
 	Building draggingObject;
 	public GameObject particleObject;
-	CreateIsland.Node focusNode;
+	Fog focusFog;
+	public CreateIsland.Node focusNode;
 	Vector3 focusPoint;
+	public GameObject focusObject;
 	public Vector3 cameraCenter;
 
 	public void Init(){
@@ -150,14 +152,28 @@ public class TouchManager : MonoBehaviour {
 		if (hit.transform != null) {
 			if (hit.transform.name != "Ground") {
 				if (hit.transform.name == "NewLandFog" && mode == Mode.Move) {
-					isFog = true;
+					if (focusFog != null) {
+						focusFog.RemoveHighlight ();
+						focusObject = null;
+					}
+					focusFog = hit.transform.GetComponent<Fog> ();
 				}
 				return;
 			}
 		}
-		isFog = false;
+		if (focusFog != null) {
+			focusFog.RemoveHighlight();
+			focusFog = null;
+			focusObject = null;
+		}
 		focusPoint = hit.point;
-		focusNode = CreateLevel.instance.GetNode (hit.point + new Vector3(0.5f, 0, 0.5f));
+		if (focusNode != null) {
+			if (focusNode.item != null) {
+				focusNode.RemoveHighlight ();
+				focusObject = null;
+			}
+		}
+		focusNode = CreateLevel.instance.GetNode (hit.point + new Vector3 (0.5f, 0, 0.5f));
 		switch (mode) {
 		case Mode.Build:
 			draggingObject = dgUtil.Instantiate (ResourceManager.instance.currentBuilding
@@ -187,8 +203,9 @@ public class TouchManager : MonoBehaviour {
 
 	bool CheckTap(){
 		if (touchTime < 0.2f && allowTap) {
-			if (isFog) {
-				Debug.Log ("Fog tap");
+			if (focusFog != null) {
+				focusFog.Highlight ();
+				focusObject = focusFog.gameObject;
 				return true;
 			}
 			switch (mode) {
@@ -198,8 +215,8 @@ public class TouchManager : MonoBehaviour {
 			case Mode.Move:
 				if (focusNode != null) {
 					if (focusNode.item != null) {
-						Debug.Log (focusNode.item.name);
 						focusNode.Highlight ();
+						focusObject = focusNode.island.gameObject;
 					}
 				}
 				//select building
@@ -238,14 +255,7 @@ public class TouchManager : MonoBehaviour {
 		draggingObject.transform.parent = focusNode.island.transform;
 		draggingObject.transform.localPosition = focusNode.GetPoint ();
 		if (draggingObject.CheckPlacement (focusPoint)) {
-			bool hasResources = true;
-			for (int i = 0; i < draggingObject.buildResource.Count; i++) {
-				if (ResourceManager.instance.resourceCounts [draggingObject.buildResource [i]] < draggingObject.buildCost [i]) {
-					hasResources = false;
-					break;
-				}
-			}
-			if (hasResources) {
+			if (ResourceManager.instance.HasResource(draggingObject.buildResource, draggingObject.buildCost) > 0) {
 				draggingObject.RemoveBadHighlight ();
 			}
 			else{
@@ -266,21 +276,12 @@ public class TouchManager : MonoBehaviour {
 
 	public bool PlaceBuilding(){
 		if (draggingObject != null) {
-			bool hasResources = true;
-			for (int i = 0; i < draggingObject.buildResource.Count; i++) {
-				if (ResourceManager.instance.resourceCounts [draggingObject.buildResource [i]] < draggingObject.buildCost [i]) {
-					hasResources = false;
-					break;
-				}
-			}
 			draggingObject.transform.parent = focusNode.island.transform;
 			draggingObject.transform.localPosition = focusNode.GetPoint ();
 			draggingObject.gameObject.SetActive (draggingObject.CheckPlacement(focusPoint));
 			CreateLevel.instance.ResetHighlights ();
-			if (draggingObject.CheckPlacement (focusPoint) && hasResources) {
-				for (int i = 0; i < draggingObject.buildResource.Count; i++) {
-					ResourceManager.instance.RemoveResources (draggingObject.buildResource [i], draggingObject.buildCost [i]);
-				}
+			if (draggingObject.CheckPlacement (focusPoint) && ResourceManager.instance.HasResource(draggingObject.buildResource, draggingObject.buildCost) > 0) {
+				ResourceManager.instance.RemoveResources (draggingObject.buildResource, draggingObject.buildCost);
 				draggingObject.SetNodes (
 					ResourceManager.instance.ClaimResource (draggingObject.consumedResource
 						, focusPoint + new Vector3 (-(draggingObject.size.x - 1) / 2, 0, (draggingObject.size.y - 1) / 2)
@@ -291,6 +292,7 @@ public class TouchManager : MonoBehaviour {
 				draggingObject.RemoveBadHighlight ();
 				draggingObject = null;
 				focusNode = null;
+				MenuManager.instance.ToggleMoveMode ();
 				return true;
 			} else {
 				Destroy (draggingObject.gameObject);

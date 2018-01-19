@@ -1,15 +1,13 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/_Important/Scripts/UI/BuildingObjectCard.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/_Important/Scripts/Player/TouchManager.cs">
     <Files>
-      <File FileName="Assets/_Important/Scripts/Player/TouchManager.cs" Line="209" Column="7" />
-      <File FileName="Assets/_Important/Scripts/World/CreateIsland.cs" Line="1" Column="1" />
-      <File FileName="Assets/_Important/Scripts/World/CreateLevel.cs" Line="1" Column="1" />
-      <File FileName="Assets/_Important/Scripts/Player/ResourceManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/_Important/Scripts/Player/MenuManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/_Important/Scripts/World/Building.cs" Line="1" Column="1" />
-      <File FileName="Assets/_Important/Scripts/Player/dgUtil.cs" Line="1" Column="1" />
-      <File FileName="Assets/_Important/Scripts/UI/BuildingObjectCard.cs" Line="12" Column="1" />
+      <File FileName="Assets/_Important/Scripts/World/CreateLevel.cs" Line="10" Column="33" />
+      <File FileName="Assets/_Important/Scripts/Player/GameManager.cs" Line="183" Column="14" />
+      <File FileName="Assets/_Important/Scripts/World/CreateIsland.cs" Line="141" Column="109" />
+      <File FileName="Assets/_Important/Scripts/World/Building.cs" Line="32" Column="40" />
+      <File FileName="Assets/_Important/Scripts/Player/MenuManager.cs" Line="205" Column="28" />
+      <File FileName="Assets/_Important/Scripts/Player/TouchManager.cs" Line="193" Column="5" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -35,9 +35,9 @@ public class BuildingObjectCard : MonoBehaviour {
 			}
 		}
 		producedResource.sprite = ResourceManager.instance.resourceSprites [b.producedResource];
-		buildResource.sprite = ResourceManager.instance.resourceSprites [b.buildResource[0]];
-		buildResourceCount.text = b.buildCost[0].ToString();
-		buildResourceCountShadow.text = b.buildCost[0].ToString();
+		buildResource.sprite = ResourceManager.instance.resourceSprites [b.buildResource];
+		buildResourceCount.text = b.buildCost.ToString();
+		buildResourceCountShadow.text = b.buildCost.ToString();
 		title.text = b.name;
 		buildTime.text = dgUtil.FormatTime (b.buildTime);
 		size.text = b.size.x + "x" + b.size.y;

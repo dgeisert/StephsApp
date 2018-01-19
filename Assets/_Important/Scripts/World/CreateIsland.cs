@@ -30,6 +30,7 @@ public class CreateIsland : MonoBehaviour
 		public Node reference;
 		public bool occupied = false, claimed = false;
 		public GameObject item;
+		public List<Building> claimants;
 		public int splatIndexStart, splatIndexEnd;
 		public CreateIsland island;
 		public List<Color> colorHold;
@@ -37,6 +38,9 @@ public class CreateIsland : MonoBehaviour
 		public Resource resource;
 		public int resourceCount = 0;
 		public void Load(string str){
+			if (resource == Resource.Tree) {
+				ChopTree ();
+			}
 			resource = (Resource)System.Enum.Parse(typeof(Resource), str.Split ('.') [1]);
 			foreach (GameObject go in ResourceManager.instance.buildings) {
 				if (go.name == str.Split ('.') [0]) {
@@ -53,17 +57,27 @@ public class CreateIsland : MonoBehaviour
 			toSave += ".";
 			toSave += resourceCount.ToString();
 			toSave += ".";
-			Building b = item.GetComponent<Building> ();
-			string str = "";
-			if (b != null) {
-				foreach(Node n in b.nodes){
-					str += n.island.x + "-" + n.island.z + "-" + n.x + "-" + n.z + "-";
+			if (item != null) {
+				string str = "";
+				Building b = item.GetComponent<Building> ();
+				if (b != null) {
+					foreach (Node n in b.nodes) {
+						str += n.island.x + "-" + n.island.z + "-" + n.x + "-" + n.z + "-";
+					}
 				}
+				toSave += str;
 			}
-			toSave += str;
 			toSave += ".";
 			GameManager.AddSaveData (new Vector2Int (island.x, island.z), new Vector2Int (x, z), toSave);
 			return toSave;
+		}
+		public void ChopTree(){
+			resource = Resource.Open;
+			item = null;
+			for (int i = splatIndexStart; i <= splatIndexEnd; i++) {
+				island.vertsSplats [i] = island.vertsSplats [i] - Vector3.up * 100;
+			}
+			occupied = false;
 		}
 		public void Highlight(){
 			if (splatIndexEnd > 0) {
@@ -75,6 +89,15 @@ public class CreateIsland : MonoBehaviour
 					}
 					island.filterSplats.mesh.SetColors (island.colorListSplats);
 					CreateLevel.instance.highlightedNodes.Add (this);
+					if (TouchManager.instance.mode == TouchManager.Mode.Move) {
+						switch (resource) {
+						case Resource.Tree:
+							MenuManager.instance.SetOption (1, null);
+							break;
+						default:
+							break;
+						}
+					}
 				}
 			} else {
 				matsHold = new Dictionary<MeshRenderer, Material>();
@@ -87,16 +110,21 @@ public class CreateIsland : MonoBehaviour
 		}
 		public void RemoveHighlight(){
 			if (splatIndexEnd > 0) {
-				for (int i = splatIndexStart; i <= splatIndexEnd; i++) {
-					island.colorListSplats [i] = colorHold[i - splatIndexStart];
+				if (colorHold != null ? colorHold.Count > 0 : false) {
+					for (int i = splatIndexStart; i <= splatIndexEnd; i++) {
+						island.colorListSplats [i] = colorHold [i - splatIndexStart];
+					}
+					colorHold.Clear ();
 				}
-				colorHold.Clear ();
 			} else {
-				foreach (KeyValuePair<MeshRenderer, Material> kvp in matsHold) {
-					kvp.Key.material = kvp.Value;
+				if (matsHold != null ? matsHold.Count > 0 : false) {
+					foreach (KeyValuePair<MeshRenderer, Material> kvp in matsHold) {
+						kvp.Key.material = kvp.Value;
+					}
+					matsHold.Clear ();
 				}
-				matsHold.Clear ();
 			}
+			MenuManager.instance.ResetOptions ();
 			island.filterSplats.mesh.SetColors (island.colorListSplats);
 		}
     }
@@ -122,7 +150,7 @@ public class CreateIsland : MonoBehaviour
 
 	CreateLevel level;
 
-	public bool initialized = false, explored = false;
+	public bool initialized = false;
 
 	public void Init(CreateLevel levelSet, List<PointOfInterest> setSpecialPOIs, int setX, int setZ)
 	{
@@ -139,8 +167,17 @@ public class CreateIsland : MonoBehaviour
 			AssignMesh (splatsObject, vertsSplats, colorListSplats, trianglesSplats, uvsSplats);
 		} else {
 			newLandFogInstance = dgUtil.Instantiate (newLandFog, Vector3.zero, Quaternion.identity, true, transform);
+			newLandFogInstance.GetComponent<Fog> ().island = this;
+			newLandFogInstance.GetComponent<Fog> ().landPosition = new Vector2Int (x, z);
 		}
         initialized = true;
+	}
+
+	public void MakeVisisble(){
+		AssignMesh (splatsObject, vertsSplats, colorListSplats, trianglesSplats, uvsSplats);
+		if (newLandFogInstance != null) {
+			Destroy (newLandFogInstance);
+		}
 	}
 
     void BuildNodeMap()
@@ -253,9 +290,10 @@ public class CreateIsland : MonoBehaviour
     List<Node> checkedNodes;
     int poiCount;
 
+	Mesh assignMesh;
 	void AssignMesh(GameObject go, List<Vector3> verts, List<Color> colors, List<int> tris, List<Vector2> uvs)
     {
-        Mesh assignMesh = new Mesh();
+        assignMesh = new Mesh();
         filterSplats = go.AddComponent<MeshFilter>();
 		filterSplats.mesh = assignMesh;
         MeshRenderer render = go.AddComponent<MeshRenderer>();
@@ -268,6 +306,12 @@ public class CreateIsland : MonoBehaviour
 		render.sharedMaterial = mat;
         assignMesh.RecalculateNormals();
         //go.AddComponent<MeshCollider>();
+	}
+	public void RedoMesh(){
+		assignMesh.SetVertices(vertsSplats);
+		assignMesh.SetTriangles(trianglesSplats, 0);
+		assignMesh.RecalculateNormals();
+		filterSplats.mesh = assignMesh;
 	}
 
 	public Node GetNode(Vector3 point){

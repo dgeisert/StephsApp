@@ -178,6 +178,7 @@ public class CreateLevel : MonoBehaviour
 			foreach (KeyValuePair<Vector2Int, string> kvp2 in kvp.Value) {
 				islands [kvp.Key].nodes [kvp2.Key.x, kvp2.Key.y].Load (kvp2.Value);
 			}
+			islands [kvp.Key].RedoMesh ();
 		}
 	}
 }

@@ -123,4 +123,17 @@ public class ResourceManager : MonoBehaviour {
 		return nodes;
 	}
 
+	public int HasResource(Resource r, int amount){
+		if (resourceCounts [r] >= amount) {
+			// can afford without gold
+			return 1;
+		}
+		if (resourceCounts [r] + resourceCounts [Resource.Gold] >= amount) {
+			// can afford but requires gold
+			return 2;
+		}
+		//cannot afford
+		return 0;
+	}
+
 }

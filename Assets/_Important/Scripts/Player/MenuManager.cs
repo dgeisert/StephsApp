@@ -146,22 +146,9 @@ public class MenuManager : MonoBehaviour {
 	public void SetItemButtons(){
 		switch(TouchManager.instance.mode){
 		case TouchManager.Mode.Build:
-			for (int i = 0; i < options.Count; i++) {
-				if (ResourceManager.instance.buildings.Count <= i) {
-					options [i].gameObject.SetActive (false);
-				}
-				else{
-					options [i].gameObject.SetActive (true);
-					options [i].gameObject.GetComponentInChildren<Image> ().sprite = 
-						ResourceManager.instance.resourceSprites [
-							ResourceManager.instance.buildings [i].GetComponent<Building>().producedResource];
-				}
-			}
 			break;
 		case TouchManager.Mode.Move:
-			for (int i = 1; i < options.Count; i++) {
-				options [i].gameObject.SetActive (false);
-			}
+			ResetOptions ();
 			options [0].gameObject.SetActive (true);
 			//set icon
 			break;
@@ -176,11 +163,7 @@ public class MenuManager : MonoBehaviour {
 	public void SelectOption(int index){
 		switch(TouchManager.instance.mode){
 		case TouchManager.Mode.Build:
-			ResourceManager.instance.currentBuilding = ResourceManager.instance.buildings [index];
-			foreach (Button b in options) {
-				b.GetComponentInChildren<Image> ().color = Color.white;
-			}
-			options [index].GetComponentInChildren<Image> ().color = Color.black;
+			
 			break;
 		case TouchManager.Mode.Move:
 			switch (index) {
@@ -188,6 +171,28 @@ public class MenuManager : MonoBehaviour {
 				TouchManager.instance.SetCameraToHome ();
 				break;
 			case 1:
+				if (TouchManager.instance.focusObject != null) {
+					CreateIsland ci = TouchManager.instance.focusObject.GetComponent<CreateIsland> ();
+					if (ci != null) {
+						TouchManager.instance.focusNode.ChopTree ();
+						ci.RedoMesh ();
+						if (TouchManager.instance.focusNode.claimants != null) {
+							foreach (Building b in TouchManager.instance.focusNode.claimants) {
+								b.nodes.Remove (TouchManager.instance.focusNode);
+								b.SetNodes (b.nodes, b.myNode);
+							}
+						}
+						TouchManager.instance.focusNode.Save ();
+						return;
+					}
+					Fog f = TouchManager.instance.focusObject.GetComponent<Fog> ();
+					if (f != null) {
+						if (ResourceManager.instance.HasResource (f.unlockResource, f.unlockCost) > 0) {
+							f.Unlock ();
+						}
+						return;
+					}
+				}
 				break;
 			default:
 				break;
@@ -203,5 +208,17 @@ public class MenuManager : MonoBehaviour {
 			Destroy (b.gameObject);
 		}
 		GameManager.ClearData ();
+	}
+
+	public void ResetOptions(){
+		for (int i = 1; i < options.Count; i++) {
+			options [i].gameObject.SetActive (false);
+		}
+	}
+	public void SetOption(int setOption, Sprite setSprite){
+		options [setOption].gameObject.SetActive (true);
+		if (setSprite != null) {
+			options [setOption].GetComponentInChildren<Image> ().sprite = setSprite;
+		}
 	}
 }

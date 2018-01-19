@@ -63,6 +63,7 @@
      <Compile Include="Assets\_Important\Scripts\World\CreateIsland.cs" />
      <Compile Include="Assets\_Important\Scripts\World\CreateLevel.cs" />
      <Compile Include="Assets\_Important\Scripts\World\Critter.cs" />
+     <Compile Include="Assets\_Important\Scripts\World\Fog.cs" />
      <Compile Include="Assets\_Important\Scripts\World\PointOfInterest.cs" />
      <Compile Include="Assets\_Important\Scripts\World\ProceduralSplat.cs" />
      <Compile Include="Assets\Easy Save 2\ES2Init.cs" />
