@@ -154,18 +154,6 @@ public class GameManager : MonoBehaviour
 		} else {
 			//set new player values
 			AddVisibleLand (new Vector2Int(0, 0));
-			AddVisibleLand (new Vector2Int(1, 0));
-			AddVisibleLand (new Vector2Int(0, 1));
-			AddVisibleLand (new Vector2Int(-1, 0));
-			AddVisibleLand (new Vector2Int(0, -1));
-			AddVisibleLand (new Vector2Int(1, 1));
-			AddVisibleLand (new Vector2Int(-1, 1));
-			AddVisibleLand (new Vector2Int(1, -1));
-			AddVisibleLand (new Vector2Int(-1, -1));
-			AddVisibleLand (new Vector2Int(2, 0));
-			AddVisibleLand (new Vector2Int(0, 2));
-			AddVisibleLand (new Vector2Int(-2, 0));
-			AddVisibleLand (new Vector2Int(0, -2));
 			ES2.Save (1, "playerState");
 		}
 	}

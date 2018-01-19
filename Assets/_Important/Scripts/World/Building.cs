@@ -42,6 +42,7 @@ public class Building : MonoBehaviour {
 		shape.radius = radius;
 		radiusVisualizer.transform.localPosition = new Vector3 (-(size.x - 1) / 2, 0.5f, (size.y - 1) / 2);
 		radiusVisualizer.SetActive (true);
+		ResourceManager.instance.constructedBuildings.Add (this);
 		initialized = true;
 	}
 
@@ -72,11 +73,14 @@ public class Building : MonoBehaviour {
 		}
 		if (rate > 0) {
 			if (consumedResource.Count > 1) {
+				CancelInvoke ("ResourceExchange");
 				Invoke ("ResourceExchange", baseRate / rate);
 			} else {
 				if (consumeRate [0] == 0) {
+					CancelInvoke ("SimplestExchange");
 					Invoke ("SimplestExchange", baseRate / rate);
 				} else {
+					CancelInvoke ("SimpleExchange");
 					Invoke ("SimpleExchange", baseRate / rate);
 				}
 			}

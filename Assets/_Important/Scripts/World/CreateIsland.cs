@@ -79,6 +79,14 @@ public class CreateIsland : MonoBehaviour
 			}
 			occupied = false;
 		}
+		public void HighlightConsumer(){
+			matsHold = new Dictionary<MeshRenderer, Material>();
+			foreach (MeshRenderer renderer in item.GetComponentsInChildren<MeshRenderer>()) {
+				matsHold.Add (renderer, renderer.material);
+				renderer.material = island.highlightConsumerMaterial;
+			}
+			CreateLevel.instance.highlightedNodes.Add (this);
+		}
 		public void Highlight(){
 			if (splatIndexEnd > 0) {
 				if (colorHold == null ? true : colorHold.Count == 0) {
@@ -140,7 +148,7 @@ public class CreateIsland : MonoBehaviour
     public GameObject splatsObject, waterObject, waterPrefab, newLandFog, newLandFogInstance;
     public int size = 10, randomSeed = 0;
 	public Biome biome;
-	public Material mat, highlightMaterial;
+	public Material mat, highlightMaterial, highlightConsumerMaterial;
     List<PointOfInterest> pois, specialPOIs;
 	public int x, z, exploreCost;
 
@@ -317,7 +325,7 @@ public class CreateIsland : MonoBehaviour
 	public Node GetNode(Vector3 point){
 		point -= transform.position;
 		point += Vector3.one * size / 2;
-		//Debug.Log (Mathf.RoundToInt (point.x) + ", " + Mathf.RoundToInt (point.z));
+		//Debug.Log (Mathf.FloorToInt (point.x) + ", " + Mathf.FloorToInt (point.z));
 		return nodes [Mathf.FloorToInt (point.x)
 			, Mathf.FloorToInt (point.z)];
 	}
@@ -325,7 +333,7 @@ public class CreateIsland : MonoBehaviour
 	public Node GetNode(Vector2 point){
 		point -= new Vector2(transform.position.x, transform.position.z);
 		point += Vector2.one * size / 2;
-		//Debug.Log (Mathf.RoundToInt (point.x) + ", " + Mathf.RoundToInt (point.z));
+		//Debug.Log (Mathf.FloorToInt (point.x) + ", " + Mathf.FloorToInt (point.z));
 		return nodes [Mathf.FloorToInt (point.x)
 			, Mathf.FloorToInt (point.y)];
 	}

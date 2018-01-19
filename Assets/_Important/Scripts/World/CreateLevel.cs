@@ -149,7 +149,7 @@ public class CreateLevel : MonoBehaviour
 		highlightedNodes = new List<CreateIsland.Node> ();
 	}
 
-	public List<CreateIsland.Node> GetNodes(Vector3 point, float radius, bool square = false){
+	public List<CreateIsland.Node> GetNodes(Vector3 point, float radius, bool square = false, bool includeReference = false){
 		List<CreateIsland.Node> nodes = new List<CreateIsland.Node> ();
 		for (float i = -radius; i < radius; i++) {
 			for (float j = -radius; j < radius; j++) {
@@ -158,6 +158,11 @@ public class CreateLevel : MonoBehaviour
 					nodes.Add(islands[new Vector2(Mathf.RoundToInt(point2.x/islandSize)
 						, Mathf.RoundToInt(point2.z/islandSize))
 					].GetNode (point2));
+					if (nodes [nodes.Count - 1].reference != null) {
+						if(!nodes.Contains(nodes [nodes.Count - 1].reference)){
+							nodes.Add (nodes [nodes.Count - 1].reference);
+						}
+					}
 				}
 			}
 		}

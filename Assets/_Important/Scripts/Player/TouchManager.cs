@@ -172,6 +172,10 @@ public class TouchManager : MonoBehaviour {
 				focusNode.RemoveHighlight ();
 				focusObject = null;
 			}
+			if (focusNode.reference != null) {
+				focusNode.reference.RemoveHighlight ();
+				focusObject = null;
+			}
 		}
 		focusNode = CreateLevel.instance.GetNode (hit.point + new Vector3 (0.5f, 0, 0.5f));
 		switch (mode) {
@@ -217,6 +221,10 @@ public class TouchManager : MonoBehaviour {
 					if (focusNode.item != null) {
 						focusNode.Highlight ();
 						focusObject = focusNode.island.gameObject;
+					}
+					if (focusNode.reference != null) {
+						focusNode.reference.Highlight ();
+						focusObject = focusNode.reference.island.gameObject;
 					}
 				}
 				//select building
@@ -269,6 +277,7 @@ public class TouchManager : MonoBehaviour {
 			ResourceManager.instance.HighlightResource (draggingObject.consumedResource
 				, point + new Vector3(-(draggingObject.size.x - 1)/2, 0, (draggingObject.size.y - 1)/2)
 				, draggingObject.radius);
+			ResourceManager.instance.HighlightConsumers (draggingObject.producedResource, focusNode);
 			return true;
 		}
 		return false;
@@ -288,6 +297,17 @@ public class TouchManager : MonoBehaviour {
 						, draggingObject.radius
 						, draggingObject)
 					, focusNode);
+				foreach (Building b in ResourceManager.instance.constructedBuildings) {
+					if(b.consumedResource.Contains(draggingObject.producedResource)){
+						b.SetNodes (
+							ResourceManager.instance.ClaimResource (b.consumedResource
+								, b.transform.position + new Vector3 (-(b.size.x - 1) / 2, 0, (b.size.y - 1) / 2) - new Vector3 (0.5f, 0, 0.5f)
+								, b.radius
+								, b),
+							b.myNode
+						);
+					}
+				}
 				CreateLevel.instance.ResetHighlights ();
 				draggingObject.RemoveBadHighlight ();
 				draggingObject = null;

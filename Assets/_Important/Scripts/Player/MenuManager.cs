@@ -9,16 +9,24 @@ public class MenuManager : MonoBehaviour {
 
 	public GameObject backgroundClickBlocker, menuObject, settingsObject;
 
+	//main ui area
 	public Button menu, mode;
 	public List<Button> options, tabs;
 	public Text infoText;
 	public Image modeImage;
 	public Sprite moveSprite, buildSprite;
 
+	//scroll area
 	public Transform scrollTransform;
 	public ScrollRect scroll;
 	public GameObject purchaseObject, buildObject;
 	public PaymentPackage testP;
+
+	//confirmation dialog area
+	public GameObject confirmationDialog;
+	public Image resourceTotalImage, resourceConfirmImage, goldTotalImage;
+	public Text confirmInfoText, resourceTotalText, resourceConfirmText, goldTotalText;
+	public Button closeConfirmDialog, confirmConfirmDialog;
 
 	public void Init(){
 		instance = this;

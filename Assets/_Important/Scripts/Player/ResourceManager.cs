@@ -33,6 +33,7 @@ public class ResourceManager : MonoBehaviour {
 	public Dictionary<Resource, int> resourceCounts = new Dictionary<Resource, int>();
 	Dictionary<Resource, List<CreateIsland.Node>> resourceLocations = new Dictionary<Resource, List<CreateIsland.Node>> ();
 	public List<GameObject> buildings;
+	public List<Building> constructedBuildings = new List<Building> ();
 	public GameObject currentBuilding;
 
 	public void Init(){
@@ -47,11 +48,35 @@ public class ResourceManager : MonoBehaviour {
 
 	public List<CreateIsland.Node> HighlightResource(List<Resource> rTypes, Vector3 center, float radius){
 		List<CreateIsland.Node> nodes = new List<CreateIsland.Node> ();
+		foreach (CreateIsland.Node node in GetResourceNodes(rTypes, center, radius)) {
+			node.Highlight ();
+			nodes.Add (node);
+		}
+		return nodes;
+	}
+
+	public List<CreateIsland.Node> GetResourceNodes(List<Resource> rTypes, Vector3 center, float radius){
+		List<CreateIsland.Node> nodes = new List<CreateIsland.Node> ();
 		foreach (CreateIsland.Node node in CreateLevel.instance.GetNodes(center + new Vector3(0.5f, 0, 0.5f), radius)) {
 			CreateIsland.Node setNode = node.reference == null ? node : node.reference;
 			if (rTypes.Contains(setNode.resource) && !setNode.claimed && !nodes.Contains (setNode)) {
-				setNode.Highlight ();
 				nodes.Add (setNode);
+			}
+		}
+		return nodes;
+	}
+
+	public List<CreateIsland.Node> HighlightConsumers(Resource rType, CreateIsland.Node focusNode){
+		List<CreateIsland.Node> nodes = new List<CreateIsland.Node> ();
+		foreach (Building b in ResourceManager.instance.constructedBuildings) {
+			if(b.consumedResource.Contains(rType)){
+				if(CreateLevel.instance.GetNodes(b.transform.position + new Vector3 (-(b.size.x - 1) / 2, 0, (b.size.y - 1) / 2)
+					, b.radius
+					,false
+					,true).Contains(focusNode)){
+					b.myNode.HighlightConsumer();
+					nodes.Add(b.myNode);
+				}
 			}
 		}
 		return nodes;
@@ -61,17 +86,14 @@ public class ResourceManager : MonoBehaviour {
 		List<CreateIsland.Node> nodes = new List<CreateIsland.Node> ();
 		List<Vector3> verts = new List<Vector3> ();
 		List<int> tris = new List<int> ();
-		foreach (CreateIsland.Node node in CreateLevel.instance.GetNodes(center + new Vector3(0.5f, 0, 0.5f), radius)) {
-			CreateIsland.Node setNode = node.reference == null ? node : node.reference;
-			if (rTypes.Contains(setNode.resource) && !setNode.claimed && !nodes.Contains (setNode)) {
-				node.claimed = building.claimSources;
-				nodes.Add (setNode);
-				for (int i = setNode.splatIndexStart; i < setNode.splatIndexEnd; i++) {
-					tris.Add (verts.Count);
-					tris.Add (verts.Count);
-					tris.Add (verts.Count);
-					verts.Add (setNode.island.vertsSplats[i] + setNode.island.transform.position);
-				}
+		foreach (CreateIsland.Node node in GetResourceNodes(rTypes, center, radius)) {
+			node.claimed = building.claimSources;
+			nodes.Add (node);
+			for (int i = node.splatIndexStart; i < node.splatIndexEnd; i++) {
+				tris.Add (verts.Count);
+				tris.Add (verts.Count);
+				tris.Add (verts.Count);
+				verts.Add (node.island.vertsSplats [i] + node.island.transform.position);
 			}
 		}
 		Mesh mesh = new Mesh ();
