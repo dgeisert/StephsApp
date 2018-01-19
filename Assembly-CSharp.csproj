@@ -56,6 +56,8 @@
      <Compile Include="Assets\_Important\Scripts\Player\MenuManager.cs" />
      <Compile Include="Assets\_Important\Scripts\Player\ResourceManager.cs" />
      <Compile Include="Assets\_Important\Scripts\Player\TouchManager.cs" />
+     <Compile Include="Assets\_Important\Scripts\UI\BuildingObjectCard.cs" />
+     <Compile Include="Assets\_Important\Scripts\UI\PaymentPackage.cs" />
      <Compile Include="Assets\_Important\Scripts\World\Biome.cs" />
      <Compile Include="Assets\_Important\Scripts\World\Building.cs" />
      <Compile Include="Assets\_Important\Scripts\World\CreateIsland.cs" />

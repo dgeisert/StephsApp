@@ -19,7 +19,7 @@ public class TouchManager : MonoBehaviour {
 	public Vector2 startTouch;
 	Vector3 startFocusPoint;
 	float cameraMaxHeight = 40, cameraMinHeight = 10;
-	public bool touchHeld = false, positionChange = false, zooming = false, allowTap = true;
+	public bool touchHeld = false, positionChange = false, zooming = false, allowTap = true, isFog = false;
 	public float speed = 0.5f, touchTime;
 	Building draggingObject;
 	public GameObject particleObject;
@@ -28,6 +28,7 @@ public class TouchManager : MonoBehaviour {
 	public Vector3 cameraCenter;
 
 	public void Init(){
+		Application.targetFrameRate = 30;
 		instance = this;
 		speed = transform.position.y / Screen.dpi / 1.5f;
 		camera = gameObject.GetComponent<Camera> ();
@@ -40,6 +41,7 @@ public class TouchManager : MonoBehaviour {
 
 	public void SetCameraToHome(){
 		transform.position = startFocusPoint + (transform.position - cameraCenter);
+		CheckForAreaLoad ();
 	}
 
 	void Update(){
@@ -87,15 +89,6 @@ public class TouchManager : MonoBehaviour {
 		if (positionChange) {
 			CheckForAreaLoad ();
 		}
-		if(Input.GetKeyDown(KeyCode.S)){
-			GameManager.Save ();
-		}
-		if(Input.GetKeyDown(KeyCode.D)){
-			GameManager.Load ();
-		}
-		if(Input.GetKeyDown(KeyCode.F)){
-			GameManager.ClearData ();
-		}
 	}
 
 	void CheckForAreaLoad(){
@@ -112,6 +105,15 @@ public class TouchManager : MonoBehaviour {
 		if (point != startTouch) {
 			if (hit.transform != null) {
 				if (hit.transform.name != "Ground") {
+					if (hit.transform.name == "NewLandFog" && mode == Mode.Move) {
+						Vector3 change = new Vector3 ((startTouch.x - point.x) * speed, 0, (startTouch.y - point.y) * speed);
+						startTouch = point;
+						if (change.magnitude > 1) {
+							allowTap = false;
+						}
+						transform.position += change;
+						positionChange = true;
+					}
 					return;
 				}
 			}
@@ -147,9 +149,13 @@ public class TouchManager : MonoBehaviour {
 		Physics.Raycast (camera.ScreenPointToRay(new Vector3(startTouch.x, startTouch.y, 0)), out hit, 200);
 		if (hit.transform != null) {
 			if (hit.transform.name != "Ground") {
+				if (hit.transform.name == "NewLandFog" && mode == Mode.Move) {
+					isFog = true;
+				}
 				return;
 			}
 		}
+		isFog = false;
 		focusPoint = hit.point;
 		focusNode = CreateLevel.instance.GetNode (hit.point + new Vector3(0.5f, 0, 0.5f));
 		switch (mode) {
@@ -181,6 +187,10 @@ public class TouchManager : MonoBehaviour {
 
 	bool CheckTap(){
 		if (touchTime < 0.2f && allowTap) {
+			if (isFog) {
+				Debug.Log ("Fog tap");
+				return true;
+			}
 			switch (mode) {
 			case Mode.Build:
 				return PlaceBuilding ();
@@ -247,7 +257,7 @@ public class TouchManager : MonoBehaviour {
 		CreateLevel.instance.ResetHighlights ();
 		if (draggingObject.gameObject.activeSelf) {
 			ResourceManager.instance.HighlightResource (draggingObject.consumedResource
-				, point + new Vector3((draggingObject.size.x - 1)/2, 0, (draggingObject.size.y - 1)/2)
+				, point + new Vector3(-(draggingObject.size.x - 1)/2, 0, (draggingObject.size.y - 1)/2)
 				, draggingObject.radius);
 			return true;
 		}
@@ -273,7 +283,7 @@ public class TouchManager : MonoBehaviour {
 				}
 				draggingObject.SetNodes (
 					ResourceManager.instance.ClaimResource (draggingObject.consumedResource
-						, focusPoint + new Vector3 ((draggingObject.size.x - 1) / 2, 0, (draggingObject.size.y - 1) / 2)
+						, focusPoint + new Vector3 (-(draggingObject.size.x - 1) / 2, 0, (draggingObject.size.y - 1) / 2)
 						, draggingObject.radius
 						, draggingObject)
 					, focusNode);

@@ -26,7 +26,7 @@ public class CreateLevel : MonoBehaviour
 	public MeshCollider groundCollider;
 	public Camera camera;
 
-    void Awake()
+    public void Init()
     {
         CreateLevel.instance = this;
         Random.InitState(seed);
@@ -37,12 +37,11 @@ public class CreateLevel : MonoBehaviour
 		tiles = 3;
 
 		groundMesh = new Mesh ();
-
 		SetupAndCenterMap ();
 	}
 
 	void Update(){
-		waterMat.SetTextureOffset("_MainTex", new Vector2(Mathf.Cos(Time.time / 10), Mathf.Sin(Time.time / 10)));
+		waterMat.SetTextureOffset("_MainTex", new Vector2(Mathf.Cos(Time.time / 5), Mathf.Sin(Time.time / 5)) / 5);
 	}
 
 	public void CheckForAreaLoad(Vector3 cameraCenter){
@@ -52,6 +51,17 @@ public class CreateLevel : MonoBehaviour
 			centerZ = Mathf.FloorToInt (cameraCenter.z / islandSize);
 			SetupAndCenterMap ();
 		}
+	}
+
+	public void CreateIsland(int i, int j){
+		CreateIsland island = dgUtil.Instantiate (islandBase, new Vector3 (i * islandSize, 0, j * islandSize), Quaternion.identity).GetComponent<CreateIsland> ();
+		islands.Add (new Vector2 (i, j), island);
+		island.size = (int)islandSize;
+		island.randomSeed = i * 100 + j;
+		island.biome = island.gameObject.AddComponent<Biome> ();
+		island.biome.Init (island.size, biomes [Mathf.FloorToInt (Random.value * biomes.Count)], island);
+		island.Init (this, specialPOIs, i, j);
+		activeIslands.Add (island);
 	}
 
 	void SetupAndCenterMap(){
@@ -69,14 +79,7 @@ public class CreateLevel : MonoBehaviour
 					islands[new Vector2(i, j)].Init (this, specialPOIs, i, j);
 					activeIslands.Add (islands [new Vector2 (i, j)]);
 				} else {
-					CreateIsland island = dgUtil.Instantiate (islandBase, new Vector3 (i * islandSize, 0, j * islandSize), Quaternion.identity).GetComponent<CreateIsland> ();
-					islands.Add (new Vector2 (i, j), island);
-					island.size = (int)islandSize;
-					island.randomSeed = i * 100 + j;
-					island.biome = island.gameObject.AddComponent<Biome> ();
-					island.biome.Init (island.size, biomes [Mathf.FloorToInt (Random.value * biomes.Count)], island);
-					island.Init (this, specialPOIs, i, j);
-					activeIslands.Add (island);
+					CreateIsland (i, j);
 				}
 			}
 		}
@@ -169,13 +172,11 @@ public class CreateLevel : MonoBehaviour
 
 	public void Load(){
 		foreach (KeyValuePair<Vector2Int, Dictionary<Vector2Int, string>> kvp in GameManager.saveData) {
+			if (!islands.ContainsKey (kvp.Key)) {
+				CreateIsland (kvp.Key.x, kvp.Key.y);
+			}
 			foreach (KeyValuePair<Vector2Int, string> kvp2 in kvp.Value) {
-				if (islands.ContainsKey (kvp.Key)) {
-					islands [kvp.Key].nodes [kvp2.Key.x, kvp2.Key.y].Load (kvp2.Value);
-				} else {
-					//load in any island that has something on it
-					Debug.Log ("no island " + kvp.Key.ToString ());
-				}
+				islands [kvp.Key].nodes [kvp2.Key.x, kvp2.Key.y].Load (kvp2.Value);
 			}
 		}
 	}

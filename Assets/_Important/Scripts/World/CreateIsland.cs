@@ -109,12 +109,12 @@ public class CreateIsland : MonoBehaviour
 	public List<int> trianglesSplats;
     MeshRenderer rendererSplats;
     MeshFilter filterSplats;
-    public GameObject splatsObject, waterObject, waterPrefab;
+    public GameObject splatsObject, waterObject, waterPrefab, newLandFog, newLandFogInstance;
     public int size = 10, randomSeed = 0;
 	public Biome biome;
 	public Material mat, highlightMaterial;
     List<PointOfInterest> pois, specialPOIs;
-	public int x, z;
+	public int x, z, exploreCost;
 
 	public int index;
 
@@ -122,7 +122,7 @@ public class CreateIsland : MonoBehaviour
 
 	CreateLevel level;
 
-	public bool initialized = false;
+	public bool initialized = false, explored = false;
 
 	public void Init(CreateLevel levelSet, List<PointOfInterest> setSpecialPOIs, int setX, int setZ)
 	{
@@ -135,7 +135,11 @@ public class CreateIsland : MonoBehaviour
 		level = levelSet;
 		specialPOIs = setSpecialPOIs == null ? new List<PointOfInterest>() : setSpecialPOIs;
 		MeshSetup();
-		AssignMesh(splatsObject, vertsSplats, colorListSplats, trianglesSplats, uvsSplats);
+		if (GameManager.saveData.ContainsKey (new Vector2Int (x, z))) {
+			AssignMesh (splatsObject, vertsSplats, colorListSplats, trianglesSplats, uvsSplats);
+		} else {
+			newLandFogInstance = dgUtil.Instantiate (newLandFog, Vector3.zero, Quaternion.identity, true, transform);
+		}
         initialized = true;
 	}
 

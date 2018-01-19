@@ -16,25 +16,41 @@ public class dgUtil
 			+ ((seconds % 60) >= 10 ? "": "0")
 			+ Mathf.FloorToInt(seconds % 60);
 	}
-    public static string FormatNum(float value, float decimals = 1)
-    {
-        float factor = Mathf.Pow(10, decimals);
-        return (Mathf.Round(value * factor) / factor).ToString();
-    }
+	public static string FormatNum(float value, float decimals = 1)
+	{
+		float factor = Mathf.Pow(10, decimals);
+		return (Mathf.Round(value * factor) / factor).ToString();
+	}
+	public static string FormatPrice(float value)
+	{
+		float factor = Mathf.Pow(10, 2);
+		return "$" + (Mathf.Round(value * factor) / factor).ToString();
+	}
+
+	public static void Disable(GameObject go){
+		Building b = go.GetComponent<Building> ();
+		if (b != null) {
+			GameObject.Destroy(b);
+		}
+		foreach(TextMesh t in go.GetComponentsInChildren<TextMesh>()){
+			GameObject.Destroy(t);
+		}
+	}
 
 	private static GameObject InstantiateLocalOnParent(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent, bool world_local, object[] data = null)
     {
 		GameObject go = (GameObject)GameObject.Instantiate(prefab, position, rotation);
 		go.transform.SetParent(parent);
-		if (world_local) 
-		{
+		RectTransform rt = go.GetComponent<RectTransform> ();
+		if (world_local && rt == null) {
 			go.transform.localPosition = position;
 			go.transform.localRotation = rotation;
-		} 
-		else 
-		{
+		} else if (rt == null) {
 			go.transform.position = position;
 			go.transform.rotation = rotation;
+		} else {
+			rt.anchoredPosition = position;
+			rt.localScale = prefab.transform.localScale;
 		}
         go.name = prefab.name;
 		if (data != null) {

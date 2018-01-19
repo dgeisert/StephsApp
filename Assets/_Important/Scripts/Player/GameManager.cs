@@ -7,9 +7,9 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
 
-    public GameObject player;
     public static GameManager instance;
     public List<Action> EnemyChecks;
+	public int level = 1;
 
     private Dictionary<string, GameObject> resources;
     public GameObject GetResourcePrefab(string loadResource)
@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
 	public MenuManager menuManager;
 	public ResourceManager resourceManager;
 	public TouchManager touchManager;
+	public CreateLevel createLevel;
     public void Init()
 	{
 		if (GameManager.instance != null) {
@@ -49,6 +50,11 @@ public class GameManager : MonoBehaviour
         if (initialized)
         {
             return;
+		}
+		Load ();
+		GameManager.instance = this;
+		if (createLevel != null) {
+			createLevel.Init ();
 		}
 		if (resourceManager != null) {
 			resourceManager.Init ();
@@ -62,10 +68,8 @@ public class GameManager : MonoBehaviour
         initialized = true;
         EnemyChecks = new List<Action>();
         resources = new Dictionary<string, GameObject>();
-		GameManager.instance = this;
-		Load ();
+		CreateLevel.instance.Load ();
 		InvokeRepeating ("DoSave", 1, 1);
-		//dgUtil.Instantiate(player, transform.position, transform.rotation, false, null);
     }
 
     public static bool isLoading = false;
@@ -105,6 +109,12 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
+	public static void AddVisibleLand(Vector2Int island){
+		if (!saveData.ContainsKey (island)) {
+			saveData.Add (island, new Dictionary<Vector2Int, string> ());
+		}
+	}
+
 	public void DoSave(){
 		GameManager.Save ();
 	}
@@ -115,34 +125,49 @@ public class GameManager : MonoBehaviour
 		foreach(KeyValuePair<Vector2Int, Dictionary<Vector2Int, string>> kvp in saveData){
 			List<string> nodepoint = new List<string>();
 			foreach (KeyValuePair<Vector2Int, string> kvp2 in kvp.Value) {
-				nodepoint.Add (kvp2.Key.x + "-" + kvp2.Key.y + ";" + kvp2.Value);
+				nodepoint.Add (kvp2.Key.x + "*" + kvp2.Key.y + ";" + kvp2.Value);
 			}
-			ES2.Save (nodepoint, kvp.Key.x + "-" + kvp.Key.y);
-			saveIslands.Add (kvp.Key.x + "-" + kvp.Key.y);
+			ES2.Save (nodepoint, kvp.Key.x + "*" + kvp.Key.y);
+			saveIslands.Add (kvp.Key.x + "*" + kvp.Key.y);
 		}
 		ES2.Save (saveIslands, "Islands");
 	}
 	public static void Load(){
 		saveData = new Dictionary<Vector2Int, Dictionary<Vector2Int, string>> ();
-		if(ES2.Exists("Islands")){
+		if (ES2.Exists ("Islands") && ES2.Load<int>("playerState") > 0) {
 			List<string> saveIslands = ES2.LoadList<string> ("Islands");
 			foreach (string str in saveIslands) {
 				if (ES2.Exists (str)) {
-					int x = int.Parse(str.Split ('-') [0]);
-					int z = int.Parse(str.Split ('-') [1]);
+					int x = int.Parse (str.Split ('*') [0]);
+					int z = int.Parse (str.Split ('*') [1]);
 					Dictionary<Vector2Int, string> islandDic = new Dictionary<Vector2Int, string> ();
 					List<string> loadList = ES2.LoadList<string> (str);
 					foreach (string str2 in loadList) {
-						string kvp = str2.Split (';')[0];
-						int x2 = int.Parse(kvp.Split ('-') [0]);
-						int z2 = int.Parse(kvp.Split ('-') [1]);
-						islandDic.Add(new Vector2Int(x2, z2), str2.Split (';')[1]);
+						string kvp = str2.Split (';') [0];
+						int x2 = int.Parse (kvp.Split ('*') [0]);
+						int z2 = int.Parse (kvp.Split ('*') [1]);
+						islandDic.Add (new Vector2Int (x2, z2), str2.Split (';') [1]);
 					}
 					saveData.Add (new Vector2Int (x, z), islandDic);
 				}
 			}
+		} else {
+			//set new player values
+			AddVisibleLand (new Vector2Int(0, 0));
+			AddVisibleLand (new Vector2Int(1, 0));
+			AddVisibleLand (new Vector2Int(0, 1));
+			AddVisibleLand (new Vector2Int(-1, 0));
+			AddVisibleLand (new Vector2Int(0, -1));
+			AddVisibleLand (new Vector2Int(1, 1));
+			AddVisibleLand (new Vector2Int(-1, 1));
+			AddVisibleLand (new Vector2Int(1, -1));
+			AddVisibleLand (new Vector2Int(-1, -1));
+			AddVisibleLand (new Vector2Int(2, 0));
+			AddVisibleLand (new Vector2Int(0, 2));
+			AddVisibleLand (new Vector2Int(-2, 0));
+			AddVisibleLand (new Vector2Int(0, -2));
+			ES2.Save (1, "playerState");
 		}
-		CreateLevel.instance.Load ();
 	}
 
 	public static void ClearData(){
@@ -154,5 +179,11 @@ public class GameManager : MonoBehaviour
 		}
 		ES2.Delete ("Islands");
 		ES2.Delete ("test");
+		saveData = new Dictionary<Vector2Int, Dictionary<Vector2Int, string>> ();
+		ES2.Save (0, "playerState");
+	}
+
+	void OnApplicationQuit(){
+		GameManager.Save();
 	}
 }

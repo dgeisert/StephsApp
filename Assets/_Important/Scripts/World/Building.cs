@@ -5,13 +5,14 @@ using UnityEngine;
 public class Building : MonoBehaviour {
 
 	public List<Resource> consumedResource = new List<Resource> ();
+	public List<Resource> displayResource = new List<Resource>();
 	public Resource producedResource;
 	public List<int> consumeRate = new List<int> ();
 	public int produceRate = 1; 
 	public List<CreateIsland.Node> nodes = new List<CreateIsland.Node>();
 	public CreateIsland.Node myNode;
-	public int maxRate = 10, maxHold = 20, starting = 0;
-	public float rate = 1, radius = 10, baseRate = 10;
+	public int maxRate = 10, maxHold = 20, starting = 0, unlockLevel = 1;
+	public float rate = 1, radius = 10, baseRate = 10, buildTime = 10;
 	public TextMesh text;
 	public bool claimSources = false;
 	public Vector2 size = Vector2.one;
@@ -28,7 +29,7 @@ public class Building : MonoBehaviour {
 			Init ();
 			SetNodes(
 				ResourceManager.instance.ClaimResource (consumedResource
-					, transform.position + new Vector3 ((size.x - 1) / 2, 0, (size.y - 1) / 2)
+					, transform.position + new Vector3 (-(size.x - 1) / 2, 0, (size.y - 1) / 2)
 					, radius
 					, this)
 				, CreateLevel.instance.GetNode (transform.position + new Vector3 (0.5f, 0, 0.5f)));
@@ -39,7 +40,7 @@ public class Building : MonoBehaviour {
 	public void Init(){
 		ParticleSystem.ShapeModule shape = radiusVisualizer.GetComponent<ParticleSystem> ().shape;
 		shape.radius = radius;
-		radiusVisualizer.transform.localPosition = new Vector3 ((size.x - 1) / 2, 0.5f, (size.y - 1) / 2);
+		radiusVisualizer.transform.localPosition = new Vector3 (-(size.x - 1) / 2, 0.5f, (size.y - 1) / 2);
 		radiusVisualizer.SetActive (true);
 		initialized = true;
 	}
@@ -54,7 +55,7 @@ public class Building : MonoBehaviour {
 		myNode.item = gameObject;
 		for (int i = 0; i < size.x; i++) {
 			for (int j = 0; j < size.y; j++) {
-				CreateIsland.Node setNode = CreateLevel.instance.GetNode (transform.position + new Vector3 (i + 0.5f, 0, j + 0.5f));
+				CreateIsland.Node setNode = CreateLevel.instance.GetNode (transform.position + new Vector3 (-i + 0.5f, 0, j + 0.5f));
 				setNode.occupied = true;
 				if (setNode != myNode) {
 					setNode.reference = myNode;
@@ -78,7 +79,7 @@ public class Building : MonoBehaviour {
 	public bool CheckPlacement(Vector3 point){
 		for (int i = 0; i < size.x; i++) {
 			for (int j = 0; j < size.y; j++){
-				if(CreateLevel.instance.GetNode(point+ new Vector3(0.5f + i, 0, 0.5f + j)).occupied){
+				if(CreateLevel.instance.GetNode(point+ new Vector3(0.5f - i, 0, 0.5f + j)).occupied){
 					return false;
 				}
 			}
@@ -211,5 +212,11 @@ public class Building : MonoBehaviour {
 
 	public void Save(){
 		myNode.Save ();
+	}
+
+	public void SetBuildMode(){
+		ResourceManager.instance.currentBuilding = gameObject;
+		MenuManager.instance.CloseMenu ();
+		TouchManager.instance.BuildModeToggle ();
 	}
 }

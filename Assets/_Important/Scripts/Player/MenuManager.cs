@@ -7,13 +7,18 @@ public class MenuManager : MonoBehaviour {
 
 	public static MenuManager instance;
 
-	public GameObject backgroundClickBlocker;
+	public GameObject backgroundClickBlocker, menuObject, settingsObject;
 
-	public Button menu, mode, next;
+	public Button menu, mode;
 	public List<Button> options, tabs;
 	public Text infoText;
 	public Image modeImage;
 	public Sprite moveSprite, buildSprite;
+
+	public Transform scrollTransform;
+	public ScrollRect scroll;
+	public GameObject purchaseObject, buildObject;
+	public PaymentPackage testP;
 
 	public void Init(){
 		instance = this;
@@ -28,13 +33,83 @@ public class MenuManager : MonoBehaviour {
 		//*/
 	}
 
-	public void ToggleMenu(){
-		backgroundClickBlocker.SetActive (!backgroundClickBlocker.activeSelf);
-		if (backgroundClickBlocker.activeSelf) {
-			ModeButtonsOff ();
-		} else {
-			ToggleMoveMode ();
+	public void OpenSettings(){
+		backgroundClickBlocker.SetActive (true);
+		settingsObject.SetActive (true);
+	}
+	public void CloseSettings(){
+		backgroundClickBlocker.SetActive (false);
+		settingsObject.SetActive (false);
+	}
+
+	float itemOffsetY = 300, itemOffsetX = 160;
+	public List<GameObject> scrollItems = new List<GameObject> ();
+	string previousTab = "Purchase";
+	void OpenMenu(){
+		OpenMenu (previousTab);
+	}
+	public void OpenMenu(string tab){
+		backgroundClickBlocker.SetActive (true);
+		menuObject.SetActive (true);
+		ModeButtonsOff ();
+		foreach (GameObject item in scrollItems) {
+			Destroy (item);
 		}
+		scrollItems = new List<GameObject> ();
+		GameObject go = buildObject;
+		previousTab = tab;
+		int count = 6;
+		switch (tab) {
+		case "Purchase":
+			go = purchaseObject;
+			count = 12;
+			break;
+		case "House":
+			count = 4;
+			break;
+		case "Food":
+			count = 8;
+			break;
+		case "Resource":
+			count = 7;
+			break;
+		case "Military":
+			count = 16;
+			break;
+		case "Deco":
+			count = 5;
+			break;
+		default:
+			break;
+		}
+		for (int i = 0; i < count; i++) {
+			scrollItems.Add (
+				dgUtil.Instantiate (go
+					, new Vector3 (i % 2 == 0 ? -itemOffsetX : itemOffsetX
+						, (count - 4) * 100 - 300 * Mathf.Floor (i / 2)
+						, 0)
+					, Quaternion.identity
+					, true
+					, scrollTransform)
+			);
+			Building b = ResourceManager.instance.buildings [0].GetComponent<Building> ();
+			PaymentPackage p = testP;
+			if (scrollItems [i].GetComponent<BuildingObjectCard> ().Init (
+				    b
+					, p)) {
+				scrollItems [i].GetComponent<Button> ().onClick.AddListener (p.Purchase);
+			} else {
+				scrollItems [i].GetComponent<Button> ().onClick.AddListener (b.SetBuildMode);
+			}
+		}
+		scrollTransform.GetComponent<RectTransform> ().SetSizeWithCurrentAnchors (
+			RectTransform.Axis.Vertical, itemOffsetY * Mathf.Ceil(scrollItems.Count / 2 + 3));
+		scrollTransform.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (0, 1200 - 50 * scrollItems.Count);
+	}
+	public void CloseMenu(){
+		backgroundClickBlocker.SetActive (false);
+		menuObject.SetActive (false);
+		ToggleMoveMode ();
 	}
 
 	void ModeButtonsOff(){
@@ -52,7 +127,7 @@ public class MenuManager : MonoBehaviour {
 
 	public void ToggleMoveMode(){
 		mode.onClick.RemoveAllListeners ();
-		mode.onClick.AddListener(ToggleBuildMode);
+		mode.onClick.AddListener(OpenMenu);
 		modeImage.sprite = buildSprite;
 		infoText.text = "";
 		TouchManager.instance.MoveModeToggle ();
@@ -96,7 +171,6 @@ public class MenuManager : MonoBehaviour {
 			}
 			break;
 		}
-		SelectOption (0);
 	}
 
 	public void SelectOption(int index){
@@ -113,6 +187,8 @@ public class MenuManager : MonoBehaviour {
 			case 0:
 				TouchManager.instance.SetCameraToHome ();
 				break;
+			case 1:
+				break;
 			default:
 				break;
 			}
@@ -120,5 +196,12 @@ public class MenuManager : MonoBehaviour {
 		default:
 			break;
 		}
+	}
+
+	public void Nuke(){
+		foreach (Building b in GameObject.FindObjectsOfType<Building>()) {
+			Destroy (b.gameObject);
+		}
+		GameManager.ClearData ();
 	}
 }
