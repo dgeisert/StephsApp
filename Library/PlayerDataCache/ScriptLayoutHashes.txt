@@ -132,6 +132,8 @@ fa7f8103feda1e3b8ac35e5e41cdbf26 Assembly-CSharp.dll:.MenuManager
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.Advertisements.dll:UnityEngine.Advertisements.CallbackExecutor
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.Advertisements.dll:UnityEngine.Advertisements.Editor.Placeholder
 90d8e20ee38b33c2a343d4dde5beee9c Assembly-CSharp.dll:.BuildingObjectCard
+41b5fef4e2265d88c60cb57a9eb61148 Assembly-CSharp.dll:.CameraController
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp-firstpass.dll:.WaterSimple
 a13e348db57cdb225ef648cd7f959981 ProBuilderCore-Unity5.dll:ProBuilder2.Common.pb_BezierShape
 d65f8e166eb4df1e46eb9eaa8ee261c1 ProBuilderCore-Unity5.dll:ProBuilder2.Common.pb_ColorPalette
 05524b8f659e7bfe5756d1335fec24ba ProBuilderCore-Unity5.dll:.pb_DummyScript
@@ -186,3 +188,6 @@ da2d2956f93da233e582d1c5d8730a87 Assembly-CSharp.dll:.CreateIsland
 32dcc1dca94294515dfea07e896e1a84 Assembly-CSharp.dll:ProBuilder2.Examples.RuntimeEdit
 aca19d51467ad01d67ad88738f1c352c Assembly-CSharp.dll:.PaymentPackage
 586d58a59bf3dcd4ee90cf9c8947a5df Assembly-CSharp.dll:.MyExampleScript
+a40691039d55e9609b53336c07218eef Assembly-CSharp.dll:.chickenaction
+52f72f804ef8fecbd0da995882bfcee8 Assembly-CSharp.dll:.sheepaction
+54dc1957833e8c85ed7eeccf0b8691e3 Assembly-CSharp.dll:.characterButton
