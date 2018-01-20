@@ -19,7 +19,7 @@ public class TouchManager : MonoBehaviour {
 	public Vector2 startTouch;
 	Vector3 startFocusPoint;
 	float cameraMaxHeight = 40, cameraMinHeight = 10;
-	public bool touchHeld = false, positionChange = false, zooming = false, allowTap = true, isFog = false;
+	public bool touchHeld = false, positionChange = false, zooming = false, allowTap = true, isFog = false, inMenu = false;
 	public float speed = 0.5f, touchTime;
 	Building draggingObject;
 	public GameObject particleObject;
@@ -59,13 +59,16 @@ public class TouchManager : MonoBehaviour {
 				Zoom ((Vector3.Distance (Input.GetTouch (0).position - Input.GetTouch (0).deltaPosition, Input.GetTouch (1).position - Input.GetTouch (1).deltaPosition)
 				- Vector3.Distance (Input.GetTouch (0).position, Input.GetTouch (1).position)) / Screen.dpi * -15);
 			} else if (Input.touches.Length == 1 && !zooming) {
-				if (touchHeld) {
-					SingleTouch (Input.GetTouch (0).position);
-				} else {
-					SingleTouchStart (Input.GetTouch (0).position);
+				if (!inMenu) {
+					if (touchHeld) {
+						SingleTouch (Input.GetTouch (0).position);
+					} else {
+						SingleTouchStart (Input.GetTouch (0).position);
+					}
 				}
 			} else if (Input.touches.Length == 0) {
 				zooming = false;
+				inMenu = false;
 				if (touchHeld) {
 					if (!CheckTap ()) {
 						CheckDrop ();

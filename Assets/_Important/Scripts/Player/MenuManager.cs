@@ -42,6 +42,7 @@ public class MenuManager : MonoBehaviour {
 	}
 
 	public void OpenSettings(){
+		TouchManager.instance.inMenu = true;
 		backgroundClickBlocker.SetActive (true);
 		settingsObject.SetActive (true);
 	}
@@ -57,6 +58,7 @@ public class MenuManager : MonoBehaviour {
 		OpenMenu (previousTab);
 	}
 	public void OpenMenu(string tab){
+		TouchManager.instance.inMenu = true;
 		backgroundClickBlocker.SetActive (true);
 		menuObject.SetActive (true);
 		ModeButtonsOff ();
@@ -239,6 +241,7 @@ public class MenuManager : MonoBehaviour {
 			goldTotalText.gameObject.SetActive (false);
 		}
 		confirmAction = setConfirmAction;
+		TouchManager.instance.inMenu = true;
 		backgroundClickBlocker.SetActive (true);
 		confirmationDialog.SetActive (true);
 	}
