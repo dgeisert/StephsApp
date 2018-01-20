@@ -108,6 +108,17 @@ public class ResourceManager : MonoBehaviour {
 	}
 
 	public void AddResource(Resource rType, int amount, CreateIsland.Node node){
+		if (node.resource != rType) {
+			float closestDistance = 1000000;
+			foreach (Building other in constructedBuildings) {
+				if (other.producedResource == rType) {
+					if (Vector3.Distance (node.GetPoint () + node.island.transform.position, other.transform.position) < closestDistance) {
+						closestDistance = Vector3.Distance (node.GetPoint () + node.island.transform.position, other.transform.position);
+						node = other.myNode;
+					}
+				}
+			}
+		}
 		if (resourceCounts.ContainsKey (rType)) {
 			resourceCounts [rType] += amount;
 			if (!resourceLocations[rType].Contains(node)){
@@ -121,6 +132,9 @@ public class ResourceManager : MonoBehaviour {
 		Building b = node.item.GetComponent<Building> ();
 		if (b != null) {
 			b.text.text = node.resourceCount.ToString ();
+		}
+		if (Time.time > 1) {
+			node.Save ();
 		}
 	}
 

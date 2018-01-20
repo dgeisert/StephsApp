@@ -182,7 +182,6 @@ public class Building : MonoBehaviour {
 	public void AddResource(int toAdd){
 		//Debug.Log ("Adding " + toAdd.ToString () + " " + producedResource.ToString () + " to " + myNode.resourceCount.ToString ());
 		ResourceManager.instance.AddResource(producedResource, toAdd, myNode);
-		Invoke ("Save", 0.1f);
 	}
 
 	public bool CheckResourceCap(){
@@ -220,10 +219,6 @@ public class Building : MonoBehaviour {
 		}
 		SetNodes (setNodes, node);
 		AddResource (toAdd);
-	}
-
-	public void Save(){
-		myNode.Save ();
 	}
 
 	public void SetBuildMode(){

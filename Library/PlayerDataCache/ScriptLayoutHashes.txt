@@ -114,7 +114,7 @@ e9bdabf9265d758d56f01bb188916fa8 UnityEngine.Networking.dll:UnityEngine.Networki
 528ea1fd7c01796fc60c4e2f172ea229 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformVisualizer
 9de3a22eca9aefadba2d10d5987cefe3 UnityEngine.SpatialTracking.dll:UnityEngine.SpatialTracking.TrackedPoseDriver
 96a0823d2abc4847be3c4ad9c02f5a61 Assembly-CSharp.dll:.CreateLevel
-b8baa4dff702a650da14b595d903e247 Assembly-CSharp.dll:.Building
+e086beac81d707f033ece5ad7947bf32 Assembly-CSharp.dll:.Building
 322cb40e1e282f28af980cbef7922a90 UnityEngine.Analytics.dll:UnityEngine.Analytics.AnalyticsEventTracker
 dc07d7ad69b399a46e92c483bf1c04ca UnityEngine.Analytics.dll:UnityEngine.Analytics.AnalyticsTracker
 bc68edb0af574bf79f9550ead8ebae5c UnityEngine.HoloLens.dll:UnityEngine.Audio.AudioSpatializerMicrosoft
@@ -125,9 +125,10 @@ c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.Spa
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.ES2Init
 10f3b046f8d45d98248461d8e52473c7 Assembly-CSharp-firstpass.dll:.ES2Auto
 c3cd8c4cecb73f7ff0400712d6f4f278 Assembly-CSharp.dll:.HOTweenDemoBrain
+f4fcdfaf78e23fe0d3ea756cc9702f3b Assembly-CSharp.dll:.Fog
 20c2b3f1e085e2f51df4a9b53494953d Assembly-CSharp.dll:.ES2UniqueID
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:ProBuilder2.Examples.HueCube
-068d6b9c0fab67850062607522f8a80c Assembly-CSharp.dll:.MenuManager
+fa7f8103feda1e3b8ac35e5e41cdbf26 Assembly-CSharp.dll:.MenuManager
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.Advertisements.dll:UnityEngine.Advertisements.CallbackExecutor
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.Advertisements.dll:UnityEngine.Advertisements.Editor.Placeholder
 90d8e20ee38b33c2a343d4dde5beee9c Assembly-CSharp.dll:.BuildingObjectCard
@@ -175,12 +176,12 @@ c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.Spa
 793de4c4ebc9903d94c64e224b5e1fd6 Assembly-CSharp.dll:.PointOfInterest
 720bb4f32b0d0d6427c26174e1a72a8f Assembly-CSharp.dll:.Biome
 420d73cb5979b4d126f3c0d301bcca59 Assembly-CSharp.dll:ProBuilder2.Examples.CameraControls
-e09f8fd7a7151b32d05894e07fd15315 Assembly-CSharp.dll:.ResourceManager
+978233348f6044932ff26076a50884c1 Assembly-CSharp.dll:.ResourceManager
 9de3a22eca9aefadba2d10d5987cefe3 UnityEngine.SpatialTracking.dll:UnityEngine.SpatialTracking.TrackedPoseDriver
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.UniqueGameLogic
 0c2e5e6db61ba00d5c11f87647d76179 Assembly-CSharp-firstpass.dll:.ES2AutoSave
-44616060345f46a5d4b5fd1f6f35bccb Assembly-CSharp.dll:.TouchManager
-b1eb37362ae8ba1a69d28f4d7f455001 Assembly-CSharp.dll:.CreateIsland
+6ae67ae4a7a2cbfd81f6f4d7ef0059f6 Assembly-CSharp.dll:.TouchManager
+da2d2956f93da233e582d1c5d8730a87 Assembly-CSharp.dll:.CreateIsland
 22efd08edbf6eb2850138098184baf57 Assembly-CSharp-firstpass.dll:.ES2GlobalSettings
 32dcc1dca94294515dfea07e896e1a84 Assembly-CSharp.dll:ProBuilder2.Examples.RuntimeEdit
 aca19d51467ad01d67ad88738f1c352c Assembly-CSharp.dll:.PaymentPackage

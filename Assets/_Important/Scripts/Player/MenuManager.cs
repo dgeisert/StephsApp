@@ -182,21 +182,13 @@ public class MenuManager : MonoBehaviour {
 				if (TouchManager.instance.focusObject != null) {
 					CreateIsland ci = TouchManager.instance.focusObject.GetComponent<CreateIsland> ();
 					if (ci != null) {
-						TouchManager.instance.focusNode.ChopTree ();
-						ci.RedoMesh ();
-						if (TouchManager.instance.focusNode.claimants != null) {
-							foreach (Building b in TouchManager.instance.focusNode.claimants) {
-								b.nodes.Remove (TouchManager.instance.focusNode);
-								b.SetNodes (b.nodes, b.myNode);
-							}
-						}
-						TouchManager.instance.focusNode.Save ();
+						OpenConfirmation ("Chop down tree?", Resource.Logs, ci.treeValue, ci.ChopTree);
 						return;
 					}
 					Fog f = TouchManager.instance.focusObject.GetComponent<Fog> ();
 					if (f != null) {
 						if (ResourceManager.instance.HasResource (f.unlockResource, f.unlockCost) > 0) {
-							f.Unlock ();
+							OpenConfirmation ("Explore new land?", f.unlockResource, -f.unlockCost, f.Unlock);
 						}
 						return;
 					}
@@ -228,5 +220,36 @@ public class MenuManager : MonoBehaviour {
 		if (setSprite != null) {
 			options [setOption].GetComponentInChildren<Image> ().sprite = setSprite;
 		}
+	}
+
+	public void OpenConfirmation(string setInfo, Resource setResource, int setAmount, System.Action setConfirmAction, bool includeGold = false){
+		if (ResourceManager.instance.resourceCounts [setResource] < setAmount && setResource != Resource.Gold) {
+			includeGold = true;
+		}
+		confirmInfoText.text = setInfo;
+		resourceConfirmImage.sprite = ResourceManager.instance.resourceSprites [setResource];
+		resourceTotalImage.sprite = ResourceManager.instance.resourceSprites [setResource];
+		resourceConfirmText.text = (setAmount > 0 ? "+" : "") + setAmount.ToString();
+		resourceTotalText.text = ResourceManager.instance.resourceCounts [setResource].ToString();
+		if (includeGold) {
+			goldTotalImage.sprite = ResourceManager.instance.resourceSprites [Resource.Gold];
+			goldTotalText.text = ResourceManager.instance.resourceCounts [Resource.Gold].ToString();
+		} else {
+			goldTotalImage.gameObject.SetActive (false);
+			goldTotalText.gameObject.SetActive (false);
+		}
+		confirmAction = setConfirmAction;
+		backgroundClickBlocker.SetActive (true);
+		confirmationDialog.SetActive (true);
+	}
+	public System.Action confirmAction;
+	public void CloseConfirmation(){
+		backgroundClickBlocker.SetActive (false);
+		confirmationDialog.SetActive (false);
+	}
+	public void ConfirmConfirmation(){
+		backgroundClickBlocker.SetActive (false);
+		confirmationDialog.SetActive (false);
+		confirmAction ();
 	}
 }

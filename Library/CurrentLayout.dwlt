@@ -463,23 +463,23 @@ MonoBehaviour:
   m_PersistentViewDataDictionary: {fileID: 0}
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 121dffff
-    m_LastClickedID: -58094
-    m_ExpandedIDs: 72ebffff8aebffff14f9ffff000000006a450000
+    m_SelectedIDs: 8e5a0000
+    m_LastClickedID: 23182
+    m_ExpandedIDs: aef3ffff3cf4ffff94f5ffff98fbffff000000003059000046590000dc5900008e5a0000905d0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: Stockpile
-      m_OriginalName: Stockpile
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: -1880
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 0
       m_ClientGUIView: {fileID: 8}
     m_SearchString: 
@@ -668,9 +668,9 @@ MonoBehaviour:
   m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 127}
-    m_SelectedIDs: 762e0000
-    m_LastClickedID: 11894
-    m_ExpandedIDs: 00000000aa2c0000662e0000222f0000882f00002a3000004c30000056330000763400004035000048350000d435000056360000da360000fe370000243b0000e83c0000743f0000a4400000ca4000000e4100007a420000e4480000e6480000e8480000ea480000ec48000000ca9a3bffffff7f
+    m_SelectedIDs: 7e2b0000
+    m_LastClickedID: 11134
+    m_ExpandedIDs: 00000000ae2900006e2b00002e2c0000942c0000362d0000582d0000623000008c310000563200005e320000ee32000074330000fa330000263500005c3800003c3a0000be3c0000023e0000283e00006c3e0000dc3f0000f6460000f8460000fa460000fc460000fe46000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -698,7 +698,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000aa2c0000662e0000222f0000882f00002a3000004c30000056330000763400004035000048350000d435000056360000da360000fe370000243b0000e83c0000743f0000a4400000ca4000000e4100007a420000e4480000e6480000e8480000ea480000ec480000
+    m_ExpandedIDs: 00000000ae2900006e2b00002e2c0000942c0000362d0000582d0000623000008c310000563200005e320000ee32000074330000fa330000263500005c3800003c3a0000be3c0000023e0000283e00006c3e0000dc3f0000f6460000f8460000fa460000fc460000fe460000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -807,7 +807,7 @@ MonoBehaviour:
     width: 335
     height: 684
   m_PersistentViewDataDictionary: {fileID: 0}
-  m_ScrollPosition: {x: 0, y: 161.95508}
+  m_ScrollPosition: {x: 0, y: 0}
   m_InspectorMode: 0
   m_PreviewResizer:
     m_CachedPref: 160

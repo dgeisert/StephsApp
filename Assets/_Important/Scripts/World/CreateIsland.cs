@@ -337,4 +337,18 @@ public class CreateIsland : MonoBehaviour
 		return nodes [Mathf.FloorToInt (point.x)
 			, Mathf.FloorToInt (point.y)];
 	}
+
+	public int treeValue = 10;
+	public void ChopTree(){
+		ResourceManager.instance.AddResource (Resource.Logs, treeValue, TouchManager.instance.focusNode);
+		TouchManager.instance.focusNode.ChopTree ();
+		RedoMesh ();
+		if (TouchManager.instance.focusNode.claimants != null) {
+			foreach (Building b in TouchManager.instance.focusNode.claimants) {
+				b.nodes.Remove (TouchManager.instance.focusNode);
+				b.SetNodes (b.nodes, b.myNode);
+			}
+		}
+		TouchManager.instance.focusNode.Save ();
+	}
 }
