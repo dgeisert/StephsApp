@@ -76,6 +76,7 @@
      <Compile Include="Assets\Easy Save 2\Examples\Upload and Download a Texture\UploadDownloadTexture.cs" />
      <Compile Include="Assets\Easy Save 2\Types\ES2_AudioClip.cs" />
      <Compile Include="Assets\HOTween\_Demo\HOTweenDemoBrain.cs" />
+     <Compile Include="Assets\Lowpoly Township Set\CameraController.cs" />
      <Compile Include="Assets\ProCore\ProBuilder\API Examples\Icosphere FFT\Scripts\CameraControls.cs" />
      <Compile Include="Assets\ProCore\ProBuilder\API Examples\Icosphere FFT\Scripts\IcoBumpin.cs" />
      <Compile Include="Assets\ProCore\ProBuilder\API Examples\Misc\HueCube.cs" />
@@ -92,9 +93,12 @@
      <None Include="Assets\Easy Save 2\changelog.txt" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_UnlitSolidColor.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_ReferenceUnlit.shader" />
+     <None Include="Assets\AxeyWorks\Low Poly v2\Shaders\AxeyWorksPolyWaterBlendFoam.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\DiffuseTextureBlend.shader" />
+     <None Include="Assets\AxeyWorks\Low Poly v2\Shaders\AxeyWorksMobDist.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_StandardVertexColor.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_VertexPicker.shader" />
+     <None Include="Assets\Lowpoly Township Set\Readme.txt" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_HideVertices.shader" />
      <None Include="Assets\Easy Save 2\readme.txt" />
      <None Include="Assets\cartoon_unity_pack\Shaders\Cull_Off_Standard.shader" />
@@ -109,9 +113,12 @@
      <None Include="Assets\ProCore\ProBuilder\About\pc_AboutEntry_ProBuilder.txt" />
      <None Include="Assets\link.xml" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_VertexShader.shader" />
+     <None Include="Assets\Fantasy props\readme.txt" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_NormalPreview.shader" />
+     <None Include="Assets\AxeyWorks\Low Poly v2\Shaders\AxeyWorksMobDist.cginc" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_ScrollHighlight.shader" />
      <None Include="Assets\ProCore\ProBuilder\readme.txt" />
+     <None Include="Assets\AxeyWorks\Low Poly v2\Shaders\AxeyWorksDistortion.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_SmoothingPreview.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
