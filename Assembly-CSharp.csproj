@@ -100,6 +100,7 @@
      <None Include="Assets\cartoon_unity_pack\Shaders\Cull_Off_Standard.shader" />
      <None Include="Assets\cartoon_unity_pack\Shaders\Cull_Off_Unlit-Normal.shader" />
      <None Include="Assets\ProCore\ProBuilder\About\ThirdPartyLicenses.txt" />
+     <None Include="Assets\Cartoon lowpoly town\readme.txt" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_UnlitVertexColor.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_FacePicker.shader" />
      <None Include="Assets\cartoon_unity_pack\Shaders\Cull_Off_Unlit-Alpha.shader" />
