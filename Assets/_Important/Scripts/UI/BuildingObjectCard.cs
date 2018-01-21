@@ -29,11 +29,13 @@ public class BuildingObjectCard : MonoBehaviour {
 	public void Init(Building b){
 		for (int i = 0; i < requiredResources.Count; i++) {
 			if (b.displayResource.Count > i) {
+				//Debug.Log (b.displayResource [i]);
 				requiredResources [i].sprite = ResourceManager.instance.resourceSprites [b.displayResource [i]];
 			} else {
 				requiredResources [i].enabled = false;
 			}
 		}
+		//Debug.Log (b.producedResource);
 		producedResource.sprite = ResourceManager.instance.resourceSprites [b.producedResource];
 		buildResource.sprite = ResourceManager.instance.resourceSprites [b.buildResource];
 		buildResourceCount.text = b.buildCost.ToString();

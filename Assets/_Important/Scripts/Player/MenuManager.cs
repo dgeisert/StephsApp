@@ -77,7 +77,7 @@ public class MenuManager : MonoBehaviour {
 				scrollItems.Add (
 					dgUtil.Instantiate (go
 						, new Vector3 (i % 2 == 0 ? -itemOffsetX : itemOffsetX
-							, (count - 4) * 100 - 300 * Mathf.Floor (i / 2)
+							, 600 - 300 * Mathf.Floor (i / 2)
 							, 0)
 						, Quaternion.identity
 						, true
@@ -109,9 +109,9 @@ public class MenuManager : MonoBehaviour {
 				if (ResourceManager.instance.buildings [j].GetComponent<Building> ().Category == tab) {
 					scrollItems.Add (
 						dgUtil.Instantiate (go
-					, new Vector3 (i % 2 == 0 ? -itemOffsetX : itemOffsetX
-						, (count - 4) * 100 - 300 * Mathf.Floor (i / 2)
-						, 0)
+								, new Vector3 (i % 2 == 0 ? -itemOffsetX : itemOffsetX
+								, 600 - 300 * Mathf.Floor (i / 2)
+								, 0)
 					, Quaternion.identity
 					, true
 					, scrollTransform)
@@ -125,7 +125,7 @@ public class MenuManager : MonoBehaviour {
 		}
 		scrollTransform.GetComponent<RectTransform> ().SetSizeWithCurrentAnchors (
 			RectTransform.Axis.Vertical, itemOffsetY * Mathf.Ceil(scrollItems.Count / 2 + 3));
-		scrollTransform.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (0, 1200 - 50 * scrollItems.Count);
+		scrollTransform.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (0, scrollItems.Count * 100);
 	}
 	public void CloseMenu(){
 		backgroundClickBlocker.SetActive (false);

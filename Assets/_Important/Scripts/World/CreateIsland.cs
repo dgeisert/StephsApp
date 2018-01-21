@@ -82,8 +82,10 @@ public class CreateIsland : MonoBehaviour
 		public void HighlightConsumer(){
 			matsHold = new Dictionary<MeshRenderer, Material>();
 			foreach (MeshRenderer renderer in item.GetComponentsInChildren<MeshRenderer>()) {
-				matsHold.Add (renderer, renderer.material);
-				renderer.material = island.highlightConsumerMaterial;
+				if (renderer.gameObject.GetComponent<TextMesh> () == null) {
+					matsHold.Add (renderer, renderer.material);
+					renderer.material = island.highlightConsumerMaterial;
+				}
 			}
 			CreateLevel.instance.highlightedNodes.Add (this);
 		}
@@ -112,8 +114,10 @@ public class CreateIsland : MonoBehaviour
 			} else {
 				matsHold = new Dictionary<MeshRenderer, Material>();
 				foreach (MeshRenderer renderer in item.GetComponentsInChildren<MeshRenderer>()) {
-					matsHold.Add (renderer, renderer.material);
-					renderer.material = island.highlightMaterial;
+					if (renderer.gameObject.GetComponent<TextMesh> () == null) {
+						matsHold.Add (renderer, renderer.material);
+						renderer.material = island.highlightMaterial;
+					}
 				}
 				CreateLevel.instance.highlightedNodes.Add (this);
 			}
@@ -220,6 +224,7 @@ public class CreateIsland : MonoBehaviour
 					waterObject = dgUtil.Instantiate (waterPrefab, new Vector3(0, -0.5f, 0), Quaternion.identity, true, transform);
 				}
 				nodes [i, j].occupied = true;
+				nodes [i, j].resource = Resource.OpenWater;
 				spawned = true;
 			}
 		}
