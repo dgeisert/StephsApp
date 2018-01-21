@@ -18,7 +18,7 @@ public class TouchManager : MonoBehaviour {
 	public Camera camera;
 	public Vector2 startTouch;
 	Vector3 startFocusPoint;
-	float cameraMaxHeight = 40, cameraMinHeight = 10;
+	float cameraMaxHeight = 50, cameraMinHeight = 5;
 	public bool touchHeld = false, positionChange = false, zooming = false, allowTap = true, isFog = false, inMenu = false;
 	public float speed = 0.5f, touchTime;
 	Building draggingObject;
@@ -311,6 +311,7 @@ public class TouchManager : MonoBehaviour {
 						);
 					}
 				}
+				ResourceManager.instance.constructedBuildings.Add (draggingObject);
 				CreateLevel.instance.ResetHighlights ();
 				draggingObject.RemoveBadHighlight ();
 				draggingObject = null;

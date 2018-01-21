@@ -95,15 +95,17 @@ public class CreateIsland : MonoBehaviour
 						colorHold.Add (island.colorListSplats [i]);
 						island.colorListSplats [i] = Color.yellow;
 					}
-					island.filterSplats.mesh.SetColors (island.colorListSplats);
-					CreateLevel.instance.highlightedNodes.Add (this);
-					if (TouchManager.instance.mode == TouchManager.Mode.Move) {
-						switch (resource) {
-						case Resource.Tree:
-							MenuManager.instance.SetOption (1, null);
-							break;
-						default:
-							break;
+					if (island.filterSplats != null) {
+						island.filterSplats.mesh.SetColors (island.colorListSplats);
+						CreateLevel.instance.highlightedNodes.Add (this);
+						if (TouchManager.instance.mode == TouchManager.Mode.Move) {
+							switch (resource) {
+							case Resource.Tree:
+								MenuManager.instance.SetOption (1, null);
+								break;
+							default:
+								break;
+							}
 						}
 					}
 				}

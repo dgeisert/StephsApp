@@ -11,7 +11,7 @@ public class Building : MonoBehaviour {
 	public int produceRate = 1; 
 	public List<CreateIsland.Node> nodes = new List<CreateIsland.Node>();
 	public CreateIsland.Node myNode;
-	public int maxRate = 10, maxHold = 20, starting = 0, unlockLevel = 1;
+	public int maxRate = 10, minRate = 0, maxHold = 20, starting = 0, unlockLevel = 1;
 	public float rate = 1, radius = 10, baseRate = 10, buildTime = 10;
 	public TextMesh text;
 	public bool claimSources = false;
@@ -20,6 +20,7 @@ public class Building : MonoBehaviour {
 	bool initialized = false;
 	public Material highlightBadMaterial;
 	public Dictionary<MeshRenderer, Material>  matsHold;
+	public string Category;
 
 	public Resource buildResource;
 	public int buildCost;
@@ -42,7 +43,6 @@ public class Building : MonoBehaviour {
 		shape.radius = radius;
 		radiusVisualizer.transform.localPosition = new Vector3 (-(size.x - 1) / 2, 0.5f, (size.y - 1) / 2);
 		radiusVisualizer.SetActive (true);
-		ResourceManager.instance.constructedBuildings.Add (this);
 		initialized = true;
 	}
 
@@ -59,7 +59,7 @@ public class Building : MonoBehaviour {
 			}
 		}
 		myNode = setMyNode;
-		rate = Mathf.Min(nodes.Count, maxRate);
+		rate = Mathf.Max (Mathf.Min (nodes.Count, maxRate), minRate);
 		myNode.resource = producedResource;
 		myNode.item = gameObject;
 		for (int i = 0; i < size.x; i++) {
@@ -122,7 +122,7 @@ public class Building : MonoBehaviour {
 						if (node2.resource == consumedResource [0]) {
 							int deduct = Mathf.Min(consumeRate[0], node2.resourceCount);
 							count -= deduct;
-							ResourceManager.instance.AddResource(producedResource, -deduct, node2);
+							ResourceManager.instance.AddResource(consumedResource[0], -deduct, node2);
 							if (count == 0) {
 								break;
 							}
@@ -214,7 +214,7 @@ public class Building : MonoBehaviour {
 			CreateIsland.Node claimNode = CreateLevel.instance.islands [
 				new Vector2 (int.Parse (nodeIndex [i]), int.Parse (nodeIndex [i + 1]))]
 				.nodes [int.Parse (nodeIndex [i + 2]), int.Parse (nodeIndex [i + 3])];
-			claimNode.claimed = true;
+			claimNode.claimed = claimSources;
 			setNodes.Add(claimNode);
 		}
 		SetNodes (setNodes, node);
@@ -225,5 +225,9 @@ public class Building : MonoBehaviour {
 		ResourceManager.instance.currentBuilding = gameObject;
 		MenuManager.instance.CloseMenu ();
 		MenuManager.instance.ToggleBuildMode ();
+	}
+
+	public void Save(){
+		myNode.Save ();
 	}
 }

@@ -26,7 +26,7 @@ public class BuildingObjectCard : MonoBehaviour {
 		return isPurchasePackage;
 	}
 
-	void Init(Building b){
+	public void Init(Building b){
 		for (int i = 0; i < requiredResources.Count; i++) {
 			if (b.displayResource.Count > i) {
 				requiredResources [i].sprite = ResourceManager.instance.resourceSprites [b.displayResource [i]];
@@ -49,7 +49,7 @@ public class BuildingObjectCard : MonoBehaviour {
 		}
 	}
 
-	void Init(PaymentPackage p){
+	public void Init(PaymentPackage p){
 		title.text = p.packageName;
 		package.text = p.packageAmout.ToString();
 		packageShadow.text = p.packageAmout.ToString ();

@@ -72,44 +72,55 @@ public class MenuManager : MonoBehaviour {
 		switch (tab) {
 		case "Purchase":
 			go = purchaseObject;
-			count = 12;
+			count = 6;
+			for (int i = 0; i < count; i++) {
+				scrollItems.Add (
+					dgUtil.Instantiate (go
+						, new Vector3 (i % 2 == 0 ? -itemOffsetX : itemOffsetX
+							, (count - 4) * 100 - 300 * Mathf.Floor (i / 2)
+							, 0)
+						, Quaternion.identity
+						, true
+						, scrollTransform)
+				);
+				Building b = ResourceManager.instance.buildings [0].GetComponent<Building> ();
+				PaymentPackage p = testP;
+				scrollItems [i].GetComponent<BuildingObjectCard> ().Init (p);
+				scrollItems [i].GetComponent<Button> ().onClick.AddListener (p.Purchase);
+			}
 			break;
 		case "House":
-			count = 4;
+			
 			break;
 		case "Food":
-			count = 8;
 			break;
 		case "Resource":
-			count = 7;
 			break;
 		case "Military":
-			count = 16;
 			break;
 		case "Deco":
-			count = 5;
 			break;
 		default:
 			break;
 		}
-		for (int i = 0; i < count; i++) {
-			scrollItems.Add (
-				dgUtil.Instantiate (go
+		if (tab != "Purchase") {
+			int i = 0;
+			for (int j = 0; j < ResourceManager.instance.buildings.Count; j++) {
+				if (ResourceManager.instance.buildings [j].GetComponent<Building> ().Category == tab) {
+					scrollItems.Add (
+						dgUtil.Instantiate (go
 					, new Vector3 (i % 2 == 0 ? -itemOffsetX : itemOffsetX
 						, (count - 4) * 100 - 300 * Mathf.Floor (i / 2)
 						, 0)
 					, Quaternion.identity
 					, true
 					, scrollTransform)
-			);
-			Building b = ResourceManager.instance.buildings [0].GetComponent<Building> ();
-			PaymentPackage p = testP;
-			if (scrollItems [i].GetComponent<BuildingObjectCard> ().Init (
-				    b
-					, p)) {
-				scrollItems [i].GetComponent<Button> ().onClick.AddListener (p.Purchase);
-			} else {
-				scrollItems [i].GetComponent<Button> ().onClick.AddListener (b.SetBuildMode);
+					);
+					Building b = ResourceManager.instance.buildings [j].GetComponent<Building> ();
+					scrollItems [i].GetComponent<Button> ().onClick.AddListener (b.SetBuildMode);
+					scrollItems [i].GetComponent<BuildingObjectCard> ().Init (b);
+					i++;
+				}
 			}
 		}
 		scrollTransform.GetComponent<RectTransform> ().SetSizeWithCurrentAnchors (

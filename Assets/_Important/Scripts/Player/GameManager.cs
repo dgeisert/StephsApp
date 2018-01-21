@@ -147,6 +147,8 @@ public class GameManager : MonoBehaviour
 						int x2 = int.Parse (kvp.Split ('*') [0]);
 						int z2 = int.Parse (kvp.Split ('*') [1]);
 						islandDic.Add (new Vector2Int (x2, z2), str2.Split (';') [1]);
+						//Debug.Log (x + ", " + z + ": " + x2 + ", " + z2);
+						//Debug.Log (str2.Split (';') [1]);
 					}
 					saveData.Add (new Vector2Int (x, z), islandDic);
 				}
@@ -154,6 +156,18 @@ public class GameManager : MonoBehaviour
 		} else {
 			//set new player values
 			AddVisibleLand (new Vector2Int(0, 0));
+			//AddSaveData (new Vector2Int (0, 0), new Vector2Int (19, 30), "LumberMill.Wood.-16.0-0-17-35-0-0-23-33-.");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (28, 25), "Square.Gold.10.0-0-17-35-0-0-23-33-.");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (34, 21), "Field.Wheat.5..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (34, 27), "Field.Wheat.5..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (37, 27), "Field.Wheat.5..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (37, 21), "Field.Wheat.5..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (34, 25), "Farm.Grain.5.0-0-34-21-0-0-34-27-0-0-37-21-0-0-37-27-.");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (28, 29), "Cottage.Peasants.5.0-0-34-25-.");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (26, 29), "Cottage.Peasants.5.0-0-34-25-.");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (29, 28), "Well.Water.10..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (17, 35), "LoggingCamp.Logs.10.0-0-15-34-0-0-15-38-0-0-18-32-0-0-18-34-0-0-18-35-0-0-18-37-0-0-19-32-.");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (23, 33), "LoggingCamp.Logs.10.0-0-21-33-0-0-21-37-0-0-22-36-0-0-22-37-0-0-24-32-0-0-24-33-0-0-25-37-0-0-26-34-.");
 			ES2.Save (1, "playerState");
 		}
 	}

@@ -14,14 +14,36 @@ public enum Resource {
 	Grass,
 	Clay,
 	Brick,
-	IronOre,
-	Iron,
+	Ore,
+	Metal,
 	Gold,
-	GoldOre,
-	Hides,
 	Leather,
-	People,
-	Fruit
+	Apples,
+	Wheat,
+	Water,
+	Peasants,
+	Craftsmen,
+	Gentry,
+	Lords,
+	Nobles,
+	Grapes,
+	Cider,
+	Wine,
+	Flour,
+	Bread,
+	Beer,
+	Charcoal,
+	Clothes,
+	Wool,
+	Milk,
+	Cows,
+	Sheep,
+	Horse,
+	Mead,
+	Eggs,
+	Jewelry,
+	Fish,
+	OreDeposit
 }
 
 public class ResourceManager : MonoBehaviour {
@@ -44,6 +66,7 @@ public class ResourceManager : MonoBehaviour {
 			//Debug.Log (spr.name);
 			resourceSprites.Add ((Resource)System.Enum.Parse(typeof(Resource), spr.name), spr);
 		}
+		resourceCounts.Add (Resource.Gold, 0);
 	}
 
 	public List<CreateIsland.Node> HighlightResource(List<Resource> rTypes, Vector3 center, float radius){
@@ -121,6 +144,9 @@ public class ResourceManager : MonoBehaviour {
 		}
 		if (resourceCounts.ContainsKey (rType)) {
 			resourceCounts [rType] += amount;
+			if (!resourceLocations.ContainsKey (rType)) {
+				resourceLocations.Add (rType, new List<CreateIsland.Node> ());
+			}
 			if (!resourceLocations[rType].Contains(node)){
 				resourceLocations [rType].Add (node);
 			}
@@ -160,6 +186,10 @@ public class ResourceManager : MonoBehaviour {
 	}
 
 	public int HasResource(Resource r, int amount){
+		if (!resourceCounts.ContainsKey (r)) {
+			resourceCounts.Add (r, 0);
+			resourceLocations.Add (r, new List<CreateIsland.Node> ());
+		}
 		if (resourceCounts [r] >= amount) {
 			// can afford without gold
 			return 1;

@@ -94,7 +94,7 @@ public class CreateLevel : MonoBehaviour
 				float offset = 1000;
 				float perlin = Mathf.PerlinNoise ((i + offset) / scale, (j + offset) / scale);
 				float perlin2 = Mathf.PerlinNoise ((i + offset) / scale / 2, (j + offset) / scale / 2);
-				float perlin3 = Mathf.PerlinNoise ((i + offset) / scale * 25, (j + offset) / scale * 25) / 3;
+				float perlin3 = Mathf.PerlinNoise ((i + offset) / scale * 25, (j + offset) / scale * 25) / 3 - 0.2f;
 				if ((i + j * perlin2) > (perlin * 10 + 15)
 					&& (i + j * perlin2) < (perlin * 10 + 30 + Mathf.Abs(j / 40))) {
 					verts.Add (new Vector3(i - 25 - transform.position.x, -1 + perlin3, j - 25 - transform.position.z));
