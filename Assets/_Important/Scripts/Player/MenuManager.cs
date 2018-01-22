@@ -28,6 +28,9 @@ public class MenuManager : MonoBehaviour {
 	public Text confirmInfoText, resourceTotalText, resourceConfirmText, goldTotalText;
 	public Button closeConfirmDialog, confirmConfirmDialog;
 
+	//warehouse select
+	public GameObject warehouseSelectDialog;
+
 	public void Init(){
 		instance = this;
 		ToggleMoveMode ();
@@ -265,5 +268,17 @@ public class MenuManager : MonoBehaviour {
 		backgroundClickBlocker.SetActive (false);
 		confirmationDialog.SetActive (false);
 		confirmAction ();
+	}
+	public void WarehouseSelect(){
+		TouchManager.instance.inMenu = true;
+		backgroundClickBlocker.SetActive (true);
+		warehouseSelectDialog.SetActive (true);
+	}
+	public void CloseWarehouseSelect(){
+		backgroundClickBlocker.SetActive (false);
+		warehouseSelectDialog.SetActive (false);
+	}
+	public void SetWarehouse(int r){
+
 	}
 }

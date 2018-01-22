@@ -74,14 +74,14 @@ public class Building : MonoBehaviour {
 		if (rate > 0) {
 			if (consumedResource.Count > 1) {
 				CancelInvoke ("ResourceExchange");
-				Invoke ("ResourceExchange", baseRate / rate);
+				Invoke ("ResourceExchange", baseRate / rate * ResourceManager.instance.rateMult);
 			} else {
 				if (consumeRate [0] == 0) {
 					CancelInvoke ("SimplestExchange");
-					Invoke ("SimplestExchange", baseRate / rate);
+					Invoke ("SimplestExchange", baseRate / rate * ResourceManager.instance.rateMult);
 				} else {
 					CancelInvoke ("SimpleExchange");
-					Invoke ("SimpleExchange", baseRate / rate);
+					Invoke ("SimpleExchange", baseRate / rate * ResourceManager.instance.rateMult);
 				}
 			}
 		}
@@ -101,16 +101,16 @@ public class Building : MonoBehaviour {
 
 	public void SimplestExchange(){
 		if (!CheckResourceCap ()) {
-			Invoke ("SimplestExchange", baseRate/rate);
+			Invoke ("SimplestExchange", baseRate/rate * ResourceManager.instance.rateMult);
 			return;
 		}
 		AddResource (produceRate);
-		Invoke ("SimplestExchange", baseRate/rate);
+		Invoke ("SimplestExchange", baseRate/rate * ResourceManager.instance.rateMult);
 	}
 
 	public void SimpleExchange(){
 		if (!CheckResourceCap ()) {
-			Invoke ("SimpleExchange", baseRate/rate);
+			Invoke ("SimpleExchange", baseRate/rate * ResourceManager.instance.rateMult);
 			return;
 		}
 		int count = 0;
@@ -133,12 +133,12 @@ public class Building : MonoBehaviour {
 				}
 			}
 		}
-		Invoke ("SimpleExchange", baseRate/rate);
+		Invoke ("SimpleExchange", baseRate/rate * ResourceManager.instance.rateMult);
 	}
 
 	public void ResourceExchange(){
 		if (!CheckResourceCap ()) {
-			Invoke ("ResourceExchange", baseRate/rate);
+			Invoke ("ResourceExchange", baseRate/rate * ResourceManager.instance.rateMult);
 			return;
 		}
 		bool canExchange = true;
@@ -171,12 +171,12 @@ public class Building : MonoBehaviour {
 							}
 						}
 					}
-					ResourceManager.instance.AddResource(producedResource, -consumeRate[i], maxNode);
+					ResourceManager.instance.AddResource(consumedResource[i], -consumeRate[i], maxNode);
 				}
 			}
 			AddResource (produceRate);
 		}
-		Invoke ("ResourceExchange", baseRate/rate);
+		Invoke ("ResourceExchange", baseRate/rate * ResourceManager.instance.rateMult);
 	}
 
 	public void AddResource(int toAdd){
@@ -222,6 +222,9 @@ public class Building : MonoBehaviour {
 	}
 
 	public void SetBuildMode(){
+		if (name == "Warehouse") {
+			return;
+		}
 		ResourceManager.instance.currentBuilding = gameObject;
 		MenuManager.instance.CloseMenu ();
 		MenuManager.instance.ToggleBuildMode ();

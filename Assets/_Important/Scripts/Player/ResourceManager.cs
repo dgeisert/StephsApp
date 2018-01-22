@@ -61,6 +61,10 @@ public class ResourceManager : MonoBehaviour {
 	public List<GameObject> buildings;
 	public List<Building> constructedBuildings = new List<Building> ();
 	public GameObject currentBuilding;
+	public float PeasantConsumeRate = 40, CraftsmenConsumeRate = 35, GentryConsumeRate = 30, LordsConsumeRate = 25, RoyalConsumeRate = 10;
+
+	//this is a debug value to make the game operate faster
+	public float rateMult = 0.5f;
 
 	public void Init(){
 		instance = this;
@@ -71,6 +75,11 @@ public class ResourceManager : MonoBehaviour {
 			resourceSprites.Add ((Resource)System.Enum.Parse(typeof(Resource), spr.name), spr);
 		}
 		resourceCounts.Add (Resource.Gold, 0);
+		Invoke ("PeasantConsume", PeasantConsumeRate * rateMult);
+		Invoke ("CraftsmemConsume", CraftsmenConsumeRate * rateMult);
+		Invoke ("GentryConsume", GentryConsumeRate * rateMult);
+		Invoke ("LordsConsume", LordsConsumeRate * rateMult);
+		Invoke ("RoyalsConsume", RoyalConsumeRate * rateMult);
 	}
 
 	public List<CreateIsland.Node> HighlightResource(List<Resource> rTypes, Vector3 center, float radius){
@@ -204,6 +213,53 @@ public class ResourceManager : MonoBehaviour {
 		}
 		//cannot afford
 		return 0;
+	}
+
+	public void PeasantConsume(){
+		if (resourceCounts [Resource.Peasants] > 0) {
+			RemoveResources (Resource.Grain, resourceCounts [Resource.Peasants]);
+			RemoveResources (Resource.Water, resourceCounts [Resource.Peasants]);
+			RemoveResources (Resource.Logs, resourceCounts [Resource.Peasants]);
+		}
+		Invoke ("PeasantConsume", PeasantConsumeRate * rateMult);
+	}
+	public void CraftsmemConsume(){
+		if (resourceCounts [Resource.Craftsmen] > 0) {
+			RemoveResources (Resource.Logs, resourceCounts [Resource.Craftsmen]);
+			RemoveResources (Resource.Beer, resourceCounts [Resource.Craftsmen]);
+			RemoveResources (Resource.Fish, resourceCounts [Resource.Craftsmen]);
+			RemoveResources (Resource.Milk, resourceCounts [Resource.Craftsmen]);
+		}
+		Invoke ("CraftsmemConsume", CraftsmenConsumeRate * rateMult);
+	}
+	public void GentryConsume(){
+		if (resourceCounts [Resource.Gentry] > 0) {
+			RemoveResources (Resource.Cloth, resourceCounts [Resource.Gentry]);
+			RemoveResources (Resource.Cider, resourceCounts [Resource.Gentry]);
+			RemoveResources (Resource.Grapes, resourceCounts [Resource.Gentry]);
+			RemoveResources (Resource.Charcoal, resourceCounts [Resource.Gentry]);
+		}
+		Invoke ("GentryConsume", GentryConsumeRate * rateMult);
+	}
+	public void LordsConsume(){
+		if (resourceCounts [Resource.Lords] > 0) {
+			RemoveResources (Resource.Eggs, resourceCounts [Resource.Lords]);
+			RemoveResources (Resource.Leather, resourceCounts [Resource.Lords]);
+			RemoveResources (Resource.Wine, resourceCounts [Resource.Lords]);
+			RemoveResources (Resource.Honey, resourceCounts [Resource.Lords]);
+			RemoveResources (Resource.Charcoal, resourceCounts [Resource.Lords]);
+		}
+		Invoke ("LordsConsume", LordsConsumeRate * rateMult);
+	}
+	public void RoyalsConsume(){
+		if (resourceCounts [Resource.Royals] > 0) {
+			RemoveResources (Resource.Charcoal, resourceCounts [Resource.Royals]);
+			RemoveResources (Resource.Bread, resourceCounts [Resource.Royals]);
+			RemoveResources (Resource.Mead, resourceCounts [Resource.Royals]);
+			RemoveResources (Resource.Horse, resourceCounts [Resource.Royals]);
+			RemoveResources (Resource.Jewelry, resourceCounts [Resource.Royals]);
+		}
+		Invoke ("RoyalsConsume", RoyalConsumeRate * rateMult);
 	}
 
 }
