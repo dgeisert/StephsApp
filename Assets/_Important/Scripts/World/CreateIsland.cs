@@ -113,10 +113,12 @@ public class CreateIsland : MonoBehaviour
 				}
 			} else {
 				matsHold = new Dictionary<MeshRenderer, Material>();
-				foreach (MeshRenderer renderer in item.GetComponentsInChildren<MeshRenderer>()) {
-					if (renderer.gameObject.GetComponent<TextMesh> () == null) {
-						matsHold.Add (renderer, renderer.material);
-						renderer.material = island.highlightMaterial;
+				if (item != null) {
+					foreach (MeshRenderer renderer in item.GetComponentsInChildren<MeshRenderer>()) {
+						if (renderer.gameObject.GetComponent<TextMesh> () == null) {
+							matsHold.Add (renderer, renderer.material);
+							renderer.material = island.highlightMaterial;
+						}
 					}
 				}
 				CreateLevel.instance.highlightedNodes.Add (this);

@@ -38,6 +38,11 @@ public class BuildingObjectCard : MonoBehaviour {
 		//Debug.Log (b.producedResource);
 		producedResource.sprite = ResourceManager.instance.resourceSprites [b.producedResource];
 		buildResource.sprite = ResourceManager.instance.resourceSprites [b.buildResource];
+		int bCount = 0;
+		foreach (Building cb in ResourceManager.instance.constructedBuildings) {
+			bCount += (cb.name == b.name) ? 1 : 0;
+		}
+		b.buildCost = Mathf.FloorToInt (b.buildCostBase * Mathf.Pow (b.costIncrease, bCount));
 		buildResourceCount.text = b.buildCost.ToString();
 		buildResourceCountShadow.text = b.buildCost.ToString();
 		title.text = b.name;

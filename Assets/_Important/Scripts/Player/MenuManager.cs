@@ -30,6 +30,8 @@ public class MenuManager : MonoBehaviour {
 
 	//warehouse select
 	public GameObject warehouseSelectDialog;
+	public List<Button> warehouseSelectButtons;
+	Dictionary<int, Resource> buttonResourceMapping;
 
 	public void Init(){
 		instance = this;
@@ -107,13 +109,19 @@ public class MenuManager : MonoBehaviour {
 			break;
 		}
 		if (tab != "Purchase") {
+			count = 0;
+			for (int j = 0; j < ResourceManager.instance.buildings.Count; j++) {
+				if (ResourceManager.instance.buildings [j].GetComponent<Building> ().Category == tab) {
+					count++;
+				}
+			}
 			int i = 0;
 			for (int j = 0; j < ResourceManager.instance.buildings.Count; j++) {
 				if (ResourceManager.instance.buildings [j].GetComponent<Building> ().Category == tab) {
 					scrollItems.Add (
 						dgUtil.Instantiate (go
 								, new Vector3 (i % 2 == 0 ? -itemOffsetX : itemOffsetX
-								, 600 - 300 * Mathf.Floor (i / 2)
+								, 600 - 300 * Mathf.Floor (i / 2) + (count - 6) * 50
 								, 0)
 					, Quaternion.identity
 					, true
@@ -128,7 +136,7 @@ public class MenuManager : MonoBehaviour {
 		}
 		scrollTransform.GetComponent<RectTransform> ().SetSizeWithCurrentAnchors (
 			RectTransform.Axis.Vertical, itemOffsetY * Mathf.Ceil(scrollItems.Count / 2 + 3));
-		scrollTransform.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (0, scrollItems.Count * 100);
+		scrollTransform.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (0, -1000);
 	}
 	public void CloseMenu(){
 		backgroundClickBlocker.SetActive (false);
@@ -238,7 +246,7 @@ public class MenuManager : MonoBehaviour {
 		}
 	}
 
-	public void OpenConfirmation(string setInfo, Resource setResource, int setAmount, System.Action setConfirmAction, bool includeGold = false){
+	public void OpenConfirmation(string setInfo, Resource setResource, int setAmount, System.Action setConfirmAction, bool includeGold = false, System.Action setCloseAction = null){
 		if (ResourceManager.instance.resourceCounts [setResource] < setAmount && setResource != Resource.Gold) {
 			includeGold = true;
 		}
@@ -255,14 +263,18 @@ public class MenuManager : MonoBehaviour {
 			goldTotalText.gameObject.SetActive (false);
 		}
 		confirmAction = setConfirmAction;
+		closeAction = setCloseAction;
 		TouchManager.instance.inMenu = true;
 		backgroundClickBlocker.SetActive (true);
 		confirmationDialog.SetActive (true);
 	}
-	public System.Action confirmAction;
+	public System.Action confirmAction, closeAction;
 	public void CloseConfirmation(){
 		backgroundClickBlocker.SetActive (false);
 		confirmationDialog.SetActive (false);
+		if (closeAction != null) {
+			closeAction();
+		}
 	}
 	public void ConfirmConfirmation(){
 		backgroundClickBlocker.SetActive (false);
@@ -270,6 +282,26 @@ public class MenuManager : MonoBehaviour {
 		confirmAction ();
 	}
 	public void WarehouseSelect(){
+		buttonResourceMapping = new Dictionary<int, Resource> ();
+		for (int i = 0; i < warehouseSelectButtons.Count; i++) {
+			if (ResourceManager.instance.warehouseResources.Count > i) {
+				buttonResourceMapping.Add (i, ResourceManager.instance.warehouseResources [i]);
+				warehouseSelectButtons [i].transform.GetChild (1).GetComponent<Image> ().sprite 
+				= ResourceManager.instance.resourceSprites [ResourceManager.instance.warehouseResources [i]];
+				if (ResourceManager.instance.resourceCounts.ContainsKey(ResourceManager.instance.warehouseResources [i]) ?
+					ResourceManager.instance.resourceCounts [ResourceManager.instance.warehouseResources [i]] > 0
+					:false ) {
+					warehouseSelectButtons [i].enabled = true;
+					warehouseSelectButtons [i].transform.GetChild (1).GetComponent<Image> ().color = Color.white;
+				} else {
+					warehouseSelectButtons [i].enabled = false;
+					warehouseSelectButtons [i].transform.GetChild (1).GetComponent<Image> ().color = Color.gray;
+					warehouseSelectButtons [i].transform.GetChild (0).GetComponent<Image> ().color = Color.gray;
+				}
+			} else {
+				warehouseSelectButtons [i].gameObject.SetActive (false);
+			}
+		}
 		TouchManager.instance.inMenu = true;
 		backgroundClickBlocker.SetActive (true);
 		warehouseSelectDialog.SetActive (true);
@@ -279,6 +311,8 @@ public class MenuManager : MonoBehaviour {
 		warehouseSelectDialog.SetActive (false);
 	}
 	public void SetWarehouse(int r){
-
+		ResourceManager.instance.currentWarehouseResourceBuild = buttonResourceMapping [r];
+		CloseWarehouseSelect ();
+		ToggleBuildMode ();
 	}
 }

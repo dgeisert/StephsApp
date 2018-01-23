@@ -189,6 +189,9 @@ public class TouchManager : MonoBehaviour {
 				, true
 				, focusNode.island.transform).GetComponent<Building> ();
 			draggingObject.Init ();
+			if (draggingObject.name == "Warehouse") {
+				draggingObject.SetWarehouseResource ();
+			}
 			CheckNodePlacement (hit.point);
 			break;
 		case Mode.Move:
@@ -292,37 +295,59 @@ public class TouchManager : MonoBehaviour {
 			draggingObject.transform.localPosition = focusNode.GetPoint ();
 			draggingObject.gameObject.SetActive (draggingObject.CheckPlacement(focusPoint));
 			CreateLevel.instance.ResetHighlights ();
-			if (draggingObject.CheckPlacement (focusPoint) && ResourceManager.instance.HasResource(draggingObject.buildResource, draggingObject.buildCost) > 0) {
-				ResourceManager.instance.RemoveResources (draggingObject.buildResource, draggingObject.buildCost);
-				draggingObject.SetNodes (
-					ResourceManager.instance.ClaimResource (draggingObject.consumedResource
-						, focusPoint + new Vector3 (-(draggingObject.size.x - 1) / 2, 0, (draggingObject.size.y - 1) / 2)
-						, draggingObject.radius
-						, draggingObject)
-					, focusNode);
-				foreach (Building b in ResourceManager.instance.constructedBuildings) {
-					if(b.consumedResource.Contains(draggingObject.producedResource)){
-						b.SetNodes (
-							ResourceManager.instance.ClaimResource (b.consumedResource
-								, b.transform.position + new Vector3 (-(b.size.x - 1) / 2, 0, (b.size.y - 1) / 2) - new Vector3 (0.5f, 0, 0.5f)
-								, b.radius
-								, b),
-							b.myNode
-						);
-					}
-				}
-				ResourceManager.instance.constructedBuildings.Add (draggingObject);
-				CreateLevel.instance.ResetHighlights ();
-				draggingObject.RemoveBadHighlight ();
-				draggingObject = null;
-				focusNode = null;
-				MenuManager.instance.ToggleMoveMode ();
+			if (draggingObject.CheckPlacement (focusPoint)
+			    && ResourceManager.instance.HasResource (draggingObject.buildResource, draggingObject.buildCost) == 1) {
+				CompleteBuild ();
 				return true;
+			} else if (draggingObject.CheckPlacement (focusPoint)
+				&& ResourceManager.instance.HasResource (draggingObject.buildResource, draggingObject.buildCost) == 2) {
+				MenuManager.instance.OpenConfirmation ("Use gold to build?"
+					, Resource.Gold
+					, draggingObject.buildCost
+						- ResourceManager.instance.resourceCounts [draggingObject.buildResource]
+					, CompleteBuild
+					, false
+					, DeclineBuild);
 			} else {
-				Destroy (draggingObject.gameObject);
-				focusNode = null;
+				NoCompleteBuild ();
+				return false;
 			}
 		}
 		return true;
+	}
+	public void CompleteBuild(){
+		ResourceManager.instance.RemoveResources (draggingObject.buildResource, draggingObject.buildCost);
+		draggingObject.SetNodes (
+			ResourceManager.instance.ClaimResource (draggingObject.consumedResource
+				, focusPoint + new Vector3 (-(draggingObject.size.x - 1) / 2, 0, (draggingObject.size.y - 1) / 2)
+				, draggingObject.radius
+				, draggingObject)
+			, focusNode);
+		foreach (Building b in ResourceManager.instance.constructedBuildings) {
+			if(b.consumedResource.Contains(draggingObject.producedResource)){
+				b.SetNodes (
+					ResourceManager.instance.ClaimResource (b.consumedResource
+						, b.transform.position + new Vector3 (-(b.size.x - 1) / 2, 0, (b.size.y - 1) / 2) - new Vector3 (0.5f, 0, 0.5f)
+						, b.radius
+						, b),
+					b.myNode
+				);
+			}
+		}
+		ResourceManager.instance.constructedBuildings.Add (draggingObject);
+		CreateLevel.instance.ResetHighlights ();
+		draggingObject.RemoveBadHighlight ();
+		draggingObject = null;
+		focusNode = null;
+		MenuManager.instance.ToggleMoveMode ();
+	}
+	public void DeclineBuild(){
+		NoCompleteBuild ();
+		MenuManager.instance.ToggleMoveMode ();
+	}
+	public void NoCompleteBuild(){
+		Destroy (draggingObject.gameObject);
+		draggingObject = null;
+		focusNode = null;
 	}
 }

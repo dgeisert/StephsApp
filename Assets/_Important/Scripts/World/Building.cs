@@ -23,7 +23,8 @@ public class Building : MonoBehaviour {
 	public string Category;
 
 	public Resource buildResource;
-	public int buildCost;
+	public int buildCost, buildCostBase = 10;
+	public float costIncrease = 1.2f;
 
 	void Start(){
 		if (!initialized) {
@@ -217,17 +218,24 @@ public class Building : MonoBehaviour {
 			claimNode.claimed = claimSources;
 			setNodes.Add(claimNode);
 		}
+		ResourceManager.instance.constructedBuildings.Add (this);
 		SetNodes (setNodes, node);
 		AddResource (toAdd);
 	}
 
 	public void SetBuildMode(){
-		if (name == "Warehouse") {
-			return;
-		}
 		ResourceManager.instance.currentBuilding = gameObject;
 		MenuManager.instance.CloseMenu ();
+		if (name == "Warehouse") {
+			MenuManager.instance.WarehouseSelect ();
+			return;
+		}
 		MenuManager.instance.ToggleBuildMode ();
+	}
+
+	public void SetWarehouseResource(){
+		producedResource = ResourceManager.instance.currentWarehouseResourceBuild;
+		consumedResource[0] = ResourceManager.instance.currentWarehouseResourceBuild;
 	}
 
 	public void Save(){
