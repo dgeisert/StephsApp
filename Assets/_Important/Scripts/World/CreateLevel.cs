@@ -48,7 +48,7 @@ public class CreateLevel : MonoBehaviour
 		if (Mathf.FloorToInt (cameraCenter.x / islandSize - 0.5f) != centerX 
 			|| Mathf.FloorToInt (cameraCenter.z / islandSize) != centerZ) {
 			centerX = Mathf.FloorToInt (cameraCenter.x / islandSize - 0.5f);
-			centerZ = Mathf.FloorToInt (cameraCenter.z / islandSize);
+			centerZ = Mathf.FloorToInt (cameraCenter.z / islandSize - 0.1f);
 			SetupAndCenterMap ();
 		}
 	}

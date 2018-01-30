@@ -8,8 +8,7 @@ public class GameManager : MonoBehaviour
 {
 
     public static GameManager instance;
-    public List<Action> EnemyChecks;
-	public int level = 1;
+	public int level = 1, tutorialComplete = 0;
 
     private Dictionary<string, GameObject> resources;
     public GameObject GetResourcePrefab(string loadResource)
@@ -41,6 +40,7 @@ public class GameManager : MonoBehaviour
 	public ResourceManager resourceManager;
 	public TouchManager touchManager;
 	public CreateLevel createLevel;
+	public QuestManager questManager;
     public void Init()
 	{
 		if (GameManager.instance != null) {
@@ -51,25 +51,17 @@ public class GameManager : MonoBehaviour
         {
             return;
 		}
-		Load ();
 		GameManager.instance = this;
-		if (createLevel != null) {
-			createLevel.Init ();
-		}
-		if (resourceManager != null) {
-			resourceManager.Init ();
-		}
-		if (touchManager != null) {
-			touchManager.Init ();
-		}
-		if (menuManager != null) {
-			menuManager.Init ();
-		}
+		questManager.Init ();
+		Load ();
+		createLevel.Init ();
+		resourceManager.Init ();
+		touchManager.Init ();
+		menuManager.Init ();
         initialized = true;
-        EnemyChecks = new List<Action>();
         resources = new Dictionary<string, GameObject>();
 		CreateLevel.instance.Load ();
-		InvokeRepeating ("DoSave", 1, 1);
+		InvokeRepeating ("DoSave", 1, 5);
     }
 
     public static bool isLoading = false;
@@ -121,20 +113,31 @@ public class GameManager : MonoBehaviour
 		
 	public static Dictionary<Vector2Int, Dictionary<Vector2Int, string>> saveData = new Dictionary<Vector2Int, Dictionary<Vector2Int, string>>();
 	public static void Save(){
-		List<string> saveIslands = new List<string> ();
-		foreach(KeyValuePair<Vector2Int, Dictionary<Vector2Int, string>> kvp in saveData){
-			List<string> nodepoint = new List<string>();
-			foreach (KeyValuePair<Vector2Int, string> kvp2 in kvp.Value) {
-				nodepoint.Add (kvp2.Key.x + "*" + kvp2.Key.y + ";" + kvp2.Value);
+		if (!dataClear) {
+			ES2.Save (instance.level, "playerLevel");
+			ES2.Save (instance.tutorialComplete, "tutorial");
+			List<string> saveIslands = new List<string> ();
+			foreach (KeyValuePair<Vector2Int, Dictionary<Vector2Int, string>> kvp in saveData) {
+				List<string> nodepoint = new List<string> ();
+				foreach (KeyValuePair<Vector2Int, string> kvp2 in kvp.Value) {
+					nodepoint.Add (kvp2.Key.x + "*" + kvp2.Key.y + ";" + kvp2.Value);
+				}
+				ES2.Save (nodepoint, kvp.Key.x + "*" + kvp.Key.y);
+				saveIslands.Add (kvp.Key.x + "*" + kvp.Key.y);
 			}
-			ES2.Save (nodepoint, kvp.Key.x + "*" + kvp.Key.y);
-			saveIslands.Add (kvp.Key.x + "*" + kvp.Key.y);
+			ES2.Save (saveIslands, "Islands");
+			ES2.Save (QuestManager.instance.completedQuests, "CompletedQuests");
 		}
-		ES2.Save (saveIslands, "Islands");
 	}
 	public static void Load(){
 		saveData = new Dictionary<Vector2Int, Dictionary<Vector2Int, string>> ();
 		if (ES2.Exists ("Islands") && ES2.Load<int>("playerState") > 0) {
+			if (ES2.Exists ("playerLevel")) {
+				instance.level = ES2.Load<int> ("playerLevel");
+			}
+			if (ES2.Exists ("tutorial")) {
+				instance.tutorialComplete = ES2.Load<int> ("tutorial");
+			}
 			List<string> saveIslands = ES2.LoadList<string> ("Islands");
 			foreach (string str in saveIslands) {
 				if (ES2.Exists (str)) {
@@ -155,24 +158,41 @@ public class GameManager : MonoBehaviour
 			}
 		} else {
 			//set new player values
+			instance.level = 1;
 			AddVisibleLand (new Vector2Int(0, 0));
 			//AddSaveData (new Vector2Int (0, 0), new Vector2Int (19, 30), "LumberMill.Wood.-16.0-0-17-35-0-0-23-33-.");
-			AddSaveData (new Vector2Int (0, 0), new Vector2Int (28, 25), "Square.Gold.10.0-0-17-35-0-0-23-33-.");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (28, 25), "Square.Happiness.10.0-0-17-35-0-0-23-33-.");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (28, 20), "Meadow.Grass.10.0-0-17-35-0-0-23-33-.");
 			AddSaveData (new Vector2Int (0, 0), new Vector2Int (34, 21), "Field.Wheat.5..");
 			AddSaveData (new Vector2Int (0, 0), new Vector2Int (34, 27), "Field.Wheat.5..");
 			AddSaveData (new Vector2Int (0, 0), new Vector2Int (37, 27), "Field.Wheat.5..");
 			AddSaveData (new Vector2Int (0, 0), new Vector2Int (37, 21), "Field.Wheat.5..");
 			AddSaveData (new Vector2Int (0, 0), new Vector2Int (34, 25), "Farm.Grain.5.0-0-34-21-0-0-34-27-0-0-37-21-0-0-37-27-.");
-			AddSaveData (new Vector2Int (0, 0), new Vector2Int (28, 29), "Cottage.Peasants.5.0-0-34-25-.");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (36, 25), "Farm.Grain.5.0-0-34-21-0-0-34-27-0-0-37-21-0-0-37-27-.");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (28, 30), "Cottage.Peasants.5.0-0-34-25-.");
 			//AddSaveData (new Vector2Int (0, 0), new Vector2Int (26, 29), "Cottage.Peasants.5.0-0-34-25-.");
-			AddSaveData (new Vector2Int (0, 0), new Vector2Int (29, 28), "Well.Water.10..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (30, 28), "Well.Water.10..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (30, 27), "Chest.Gold.10..");
 			AddSaveData (new Vector2Int (0, 0), new Vector2Int (17, 35), "LoggingCamp.Logs.10.0-0-15-34-0-0-15-38-0-0-18-32-0-0-18-34-0-0-18-35-0-0-18-37-0-0-19-32-.");
 			AddSaveData (new Vector2Int (0, 0), new Vector2Int (23, 33), "LoggingCamp.Logs.10.0-0-21-33-0-0-21-37-0-0-22-36-0-0-22-37-0-0-24-32-0-0-24-33-0-0-25-37-0-0-26-34-.");
+
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (29, 30), "Road.Open.10..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (29, 29), "Road.Open.10..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (29, 28), "Road.Open.10..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (29, 27), "Road.Open.10..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (29, 26), "Road.Open.10..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (29, 25), "Road.Open.10..");
+			AddSaveData (new Vector2Int (0, 0), new Vector2Int (29, 24), "Road.Open.10..");
 			ES2.Save (1, "playerState");
+		}
+		if (ES2.Exists ("CompletedQuests") && ES2.Load<int> ("playerState") > 0) {
+			QuestManager.instance.completedQuests = ES2.LoadList<string> ("CompletedQuests");
 		}
 	}
 
+	static bool dataClear = false;
 	public static void ClearData(){
+		dataClear = true;
 		if(ES2.Exists("Islands")){
 			List<string> saveIslands = ES2.LoadList<string> ("Islands");
 			foreach (string str in saveIslands) {
@@ -180,6 +200,8 @@ public class GameManager : MonoBehaviour
 			}
 		}
 		ES2.Delete ("Islands");
+		ES2.Delete ("playerLevel");
+		ES2.Delete ("CompletedQuests");
 		ES2.Delete ("test");
 		saveData = new Dictionary<Vector2Int, Dictionary<Vector2Int, string>> ();
 		ES2.Save (0, "playerState");

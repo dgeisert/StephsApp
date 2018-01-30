@@ -10,6 +10,7 @@ public class PaymentPackage : MonoBehaviour {
 	public Sprite packageImage;
 
 	public void Purchase(){
-		
+		ResourceManager.instance.AddResource (Resource.Gold, packageAmout, null, true);
+		MenuManager.instance.CloseMenu ();
 	}
 }

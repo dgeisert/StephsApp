@@ -28,7 +28,7 @@ public class CreateIsland : MonoBehaviour
 			return new Vector3 (x - CreateLevel.instance.islandSize / 2, y, z - CreateLevel.instance.islandSize / 2);
 		}
 		public Node reference;
-		public bool occupied = false, claimed = false;
+		public bool occupied = false, claimed = false, road = false;
 		public GameObject item;
 		public List<Building> claimants;
 		public int splatIndexStart, splatIndexEnd;
@@ -77,6 +77,7 @@ public class CreateIsland : MonoBehaviour
 			for (int i = splatIndexStart; i <= splatIndexEnd; i++) {
 				island.vertsSplats [i] = island.vertsSplats [i] - Vector3.up * 100;
 			}
+			MenuManager.instance.SetOption (1, null);
 			occupied = false;
 		}
 		public void HighlightConsumer(){
@@ -103,7 +104,7 @@ public class CreateIsland : MonoBehaviour
 						if (TouchManager.instance.mode == TouchManager.Mode.Move) {
 							switch (resource) {
 							case Resource.Tree:
-								MenuManager.instance.SetOption (1, null);
+								MenuManager.instance.SetOption (1, ResourceManager.instance.resourceSprites[Resource.Logs]);
 								break;
 							default:
 								break;
@@ -349,7 +350,7 @@ public class CreateIsland : MonoBehaviour
 
 	public int treeValue = 10;
 	public void ChopTree(){
-		ResourceManager.instance.AddResource (Resource.Logs, treeValue, TouchManager.instance.focusNode);
+		ResourceManager.instance.AddResource (Resource.Logs, treeValue, TouchManager.instance.focusNode, true);
 		TouchManager.instance.focusNode.ChopTree ();
 		RedoMesh ();
 		if (TouchManager.instance.focusNode.claimants != null) {

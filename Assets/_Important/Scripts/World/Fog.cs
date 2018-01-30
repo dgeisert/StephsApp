@@ -11,14 +11,14 @@ public class Fog : MonoBehaviour {
 
 	public void Highlight(){
 		GetComponent<MeshRenderer> ().material = highlight;
-		MenuManager.instance.SetOption (1, null);
+		MenuManager.instance.SetOption (1, MenuManager.instance.unlockSprite);
 	}
 	public void RemoveHighlight(){
 		GetComponent<MeshRenderer> ().material = noHighlight;
-		MenuManager.instance.ResetOptions ();
 	}
 	public void Unlock(){
 		GameManager.AddVisibleLand (landPosition);
+		MenuManager.instance.SetOption (1, null);
 		island.MakeVisisble ();
 	}
 }

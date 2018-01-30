@@ -18,7 +18,7 @@ public class TouchManager : MonoBehaviour {
 	public Camera camera;
 	public Vector2 startTouch;
 	Vector3 startFocusPoint;
-	float cameraMaxHeight = 50, cameraMinHeight = 5;
+	float cameraMaxHeight = 45, cameraMinHeight = 5;
 	public bool touchHeld = false, positionChange = false, zooming = false, allowTap = true, isFog = false, inMenu = false;
 	public float speed = 0.5f, touchTime;
 	Building draggingObject;
@@ -28,6 +28,7 @@ public class TouchManager : MonoBehaviour {
 	Vector3 focusPoint;
 	public GameObject focusObject;
 	public Vector3 cameraCenter;
+	public AudioSource interactionAudio, music;
 
 	public void Init(){
 		Application.targetFrameRate = 30;
@@ -113,7 +114,7 @@ public class TouchManager : MonoBehaviour {
 					if (hit.transform.name == "NewLandFog" && mode == Mode.Move) {
 						Vector3 change = new Vector3 ((startTouch.x - point.x) * speed, 0, (startTouch.y - point.y) * speed);
 						startTouch = point;
-						if (change.magnitude > 1) {
+						if (change.magnitude > 2) {
 							allowTap = false;
 						}
 						transform.position += change;
@@ -195,6 +196,7 @@ public class TouchManager : MonoBehaviour {
 			CheckNodePlacement (hit.point);
 			break;
 		case Mode.Move:
+			MenuManager.instance.SetOption (1, null);
 			break;
 		default:
 			break;
@@ -212,7 +214,7 @@ public class TouchManager : MonoBehaviour {
 	}
 
 	bool CheckTap(){
-		if (touchTime < 0.2f && allowTap) {
+		if (touchTime < 1f && allowTap) {
 			if (focusFog != null) {
 				focusFog.Highlight ();
 				focusObject = focusFog.gameObject;
@@ -239,7 +241,7 @@ public class TouchManager : MonoBehaviour {
 				break;
 			}
 		}
-		return touchTime < 0.2f && allowTap;
+		return touchTime < 1f && allowTap;
 	}
 
 	bool CheckDrop(){
@@ -337,9 +339,11 @@ public class TouchManager : MonoBehaviour {
 		ResourceManager.instance.constructedBuildings.Add (draggingObject);
 		CreateLevel.instance.ResetHighlights ();
 		draggingObject.RemoveBadHighlight ();
-		draggingObject = null;
 		focusNode = null;
-		MenuManager.instance.ToggleMoveMode ();
+		if (draggingObject.name != "Road") {
+			MenuManager.instance.ToggleMoveMode ();
+		}
+		draggingObject = null;
 	}
 	public void DeclineBuild(){
 		NoCompleteBuild ();

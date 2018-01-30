@@ -13,14 +13,15 @@ public class Building : MonoBehaviour {
 	public CreateIsland.Node myNode;
 	public int maxRate = 10, minRate = 0, maxHold = 20, starting = 0, unlockLevel = 1;
 	public float rate = 1, radius = 10, baseRate = 10, buildTime = 10;
-	public TextMesh text;
-	public bool claimSources = false;
+	public TextMesh text, textShadow;
+	public SpriteRenderer resourceImage;
+	public bool claimSources = false, useActiveSources = false, requiresRoad = false;
 	public Vector2 size = Vector2.one;
-	public GameObject radiusVisualizer;
+	public GameObject radiusVisualizer, resourceSpritePrefab;
 	bool initialized = false;
 	public Material highlightBadMaterial;
 	public Dictionary<MeshRenderer, Material>  matsHold;
-	public string Category;
+	public string Category, singular, plural;
 
 	public Resource buildResource;
 	public int buildCost, buildCostBase = 10;
@@ -60,13 +61,28 @@ public class Building : MonoBehaviour {
 			}
 		}
 		myNode = setMyNode;
-		rate = Mathf.Max (Mathf.Min (nodes.Count, maxRate), minRate);
+		if (useActiveSources) {
+			int activeNodes = 0;
+			for (int i = 0; i < nodes.Count; i++) {
+				activeNodes += nodes [i].resourceCount > 0 ? 1 : 0;
+			}
+			rate = Mathf.Max (Mathf.Min (activeNodes, maxRate), minRate);
+		} else {
+			rate = Mathf.Max (Mathf.Min (nodes.Count, maxRate), minRate);
+		}
 		myNode.resource = producedResource;
+		resourceImage = dgUtil.Instantiate (resourceSpritePrefab, new Vector3 (0, 0, 0.5f), Quaternion.identity, true, text.transform).GetComponent<SpriteRenderer> ();
+		textShadow = resourceImage.transform.GetChild (0).GetComponent<TextMesh> ();
+		resourceImage.sprite = ResourceManager.instance.resourceSprites [producedResource];
+		resourceImage.transform.localScale = Vector3.one * 2;
 		myNode.item = gameObject;
 		for (int i = 0; i < size.x; i++) {
 			for (int j = 0; j < size.y; j++) {
 				CreateIsland.Node setNode = CreateLevel.instance.GetNode (transform.position + new Vector3 (-i + 0.5f, 0, j + 0.5f));
 				setNode.occupied = true;
+				if (name == "Road" || name == "Square") {
+					setNode.road = true;
+				}
 				if (setNode != myNode) {
 					setNode.reference = myNode;
 				}
@@ -97,6 +113,16 @@ public class Building : MonoBehaviour {
 				}
 			}
 		}
+		if (requiresRoad) {
+			for (int i = -1; i < size.x + 1; i++) {
+				for (int j = -1; j < size.y + 1; j++){
+					if(CreateLevel.instance.GetNode(point+ new Vector3(0.5f - i, 0, 0.5f + j)).road){
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 		return true;
 	}
 
@@ -106,6 +132,13 @@ public class Building : MonoBehaviour {
 			return;
 		}
 		AddResource (produceRate);
+		if (useActiveSources) {
+			int activeNodes = 0;
+			for (int i = 0; i < nodes.Count; i++) {
+				activeNodes += nodes [i].resourceCount > 0 ? 1 : 0;
+			}
+			rate = Mathf.Max (Mathf.Min (activeNodes, maxRate), minRate);
+		}
 		Invoke ("SimplestExchange", baseRate/rate * ResourceManager.instance.rateMult);
 	}
 
@@ -133,6 +166,13 @@ public class Building : MonoBehaviour {
 					break;
 				}
 			}
+		}
+		if (useActiveSources) {
+			int activeNodes = 0;
+			for (int i = 0; i < nodes.Count; i++) {
+				activeNodes += nodes [i].resourceCount > 0 ? 1 : 0;
+			}
+			rate = Mathf.Max (Mathf.Min (activeNodes, maxRate), minRate);
 		}
 		Invoke ("SimpleExchange", baseRate/rate * ResourceManager.instance.rateMult);
 	}
@@ -177,6 +217,13 @@ public class Building : MonoBehaviour {
 			}
 			AddResource (produceRate);
 		}
+		if (useActiveSources) {
+			int activeNodes = 0;
+			for (int i = 0; i < nodes.Count; i++) {
+				activeNodes += nodes [i].resourceCount > 0 ? 1 : 0;
+			}
+			rate = Mathf.Max (Mathf.Min (activeNodes, maxRate), minRate);
+		}
 		Invoke ("ResourceExchange", baseRate/rate * ResourceManager.instance.rateMult);
 	}
 
@@ -209,6 +256,10 @@ public class Building : MonoBehaviour {
 
 	public void Load(CreateIsland.Node node, string nodes, int toAdd){
 		Init ();
+		if (name == "Warehouse") {
+			producedResource = node.resource;
+			consumedResource [0] = node.resource;
+		}
 		string[] nodeIndex = nodes.Split('-');
 		List<CreateIsland.Node> setNodes = new List<CreateIsland.Node> ();
 		for (int i = 0; i < nodeIndex.Length - 2; i += 4) {
