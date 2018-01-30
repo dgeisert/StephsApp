@@ -58,6 +58,12 @@ public class MenuManager : MonoBehaviour {
 
 	int fps = 0;
 	public void Update(){
+		if(Input.GetKeyDown(KeyCode.C)){
+			if (!ResourceManager.instance.resourceCounts.ContainsKey (Resource.Cat)) {
+				ResourceManager.instance.resourceCounts.Add (Resource.Cat, 0);
+			}
+			ResourceManager.instance.resourceCounts [Resource.Cat]++;
+		}
 		///* fps
 		fps++;
 		//*/

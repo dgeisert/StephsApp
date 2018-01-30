@@ -31,6 +31,7 @@ public class QuestCard : MonoBehaviour {
 		rewardResource = q.rewardResource;
 		levelUp = q.levelUp;
 		Title.text = QuestTitle;
+		TaskTitles = new string[3];
 		for(int i = 0; i < TaskResourceText.Length; i++) {
 			if (TaskTitles.Length > i) {
 				TaskResourceIcon [i].sprite = ResourceManager.instance.resourceSprites [TaskResource [i]];
@@ -52,6 +53,9 @@ public class QuestCard : MonoBehaviour {
 				} else if (TaskResource [i] == Resource.ExploredTiles) {
 					TaskTitles [i] = "Explore new land";
 					numerator = GameManager.saveData.Count.ToString();
+				} else if (TaskResource [i] == Resource.ConstructedDeco) {
+					TaskTitles [i] = "Build Decorations";
+					numerator = ResourceManager.instance.constructedBuildings.Count.ToString();
 				} else {
 					if (TaskResourceRequirements [i] > 1) {
 						TaskTitles [i] = "Gather " + TaskResource [i].ToString();
