@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
 
     public static GameManager instance;
 	public int level = 1, tutorialComplete = 0;
+	QuestList questList;
 
     private Dictionary<string, GameObject> resources;
     public GameObject GetResourcePrefab(string loadResource)
@@ -17,7 +19,7 @@ public class GameManager : MonoBehaviour
         {
             return resources[loadResource];
         }
-        else
+		else if(loadResource != "")
         {
             GameObject go = (GameObject)Resources.Load(loadResource);
             if(go == null)
@@ -51,8 +53,9 @@ public class GameManager : MonoBehaviour
         {
             return;
 		}
+		LoadGameData();
 		GameManager.instance = this;
-		questManager.Init ();
+		questManager.Init (questList);
 		Load ();
 		createLevel.Init ();
 		resourceManager.Init ();
@@ -62,7 +65,27 @@ public class GameManager : MonoBehaviour
         resources = new Dictionary<string, GameObject>();
 		CreateLevel.instance.Load ();
 		InvokeRepeating ("DoSave", 1, 5);
-    }
+	}
+
+	private void LoadGameData()
+	{
+		// Path.Combine combines strings into a file path
+		// Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
+		string filePath = Path.Combine(Application.streamingAssetsPath, "quest.json");
+
+		Debug.Log (filePath);
+
+		if(File.Exists(filePath))
+		{
+			string dataAsJson = File.ReadAllText(filePath); 
+			Debug.Log (dataAsJson);
+			questList = JsonUtility.FromJson<QuestList>(dataAsJson);
+		}
+		else
+		{
+			Debug.LogError("Cannot load game data!");
+		}
+	}
 
     public static bool isLoading = false;
 	public void LoadScene(string level)

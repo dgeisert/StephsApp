@@ -27,12 +27,15 @@ public class QuestCard : MonoBehaviour {
 		reward = q.reward;
 		level = q.level;
 		TaskResourceRequirements = q.TaskResourceRequirements;
-		TaskBuilding = q.TaskBuilding;
+		TaskBuilding = new Building[q.TaskBuilding.Length];
 		rewardResource = q.rewardResource;
 		levelUp = q.levelUp;
 		Title.text = QuestTitle;
 		TaskTitles = new string[3];
 		for(int i = 0; i < TaskResourceText.Length; i++) {
+			if (q.TaskBuilding [i] != "") {
+				TaskBuilding [i] = GameManager.instance.GetResourcePrefab (q.TaskBuilding [i]).GetComponent<Building> ();
+			}
 			if (TaskTitles.Length > i) {
 				TaskResourceIcon [i].sprite = ResourceManager.instance.resourceSprites [TaskResource [i]];
 				if (!ResourceManager.instance.resourceCounts.ContainsKey (TaskResource [i])) {

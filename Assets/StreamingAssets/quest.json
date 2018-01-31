@@ -1,0 +1,318 @@
+{
+	"quests":
+	[
+        {
+                "TaskResource":[46,46,1],
+                "TaskBuilding":["Farm","Field",""],
+                "TaskResourceRequirements":[3,6,10],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":1
+        },        {
+                "TaskResource":[46,1,43],
+                "TaskBuilding":["LoggingCamp","",""],
+                "TaskResourceRequirements":[3,20,10],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":2
+        },        {
+                "TaskResource":[46,3,8],
+                "TaskBuilding":["Cottage","",""],
+                "TaskResourceRequirements":[2,20,10],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":3
+        },        {
+                "TaskResource":[47,18,46],
+                "TaskBuilding":["","","Meadow"],
+                "TaskResourceRequirements":[2,20,2],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":4
+        },        {
+                "TaskResource":[46,46,43],
+                "TaskBuilding":["Warehouse","LoggingCamp",""],
+                "TaskResourceRequirements":[1,4,20],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":5
+        },        {
+                "TaskResource":[9,47,44],
+                "TaskBuilding":["","",""],
+                "TaskResourceRequirements":[1,3,1],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":6
+        },        {
+                "TaskResource":[46,6,3],
+                "TaskBuilding":["Quarry","",""],
+                "TaskResourceRequirements":[1,10,30],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":7
+        },        {
+                "TaskResource":[46,9,6],
+                "TaskBuilding":["Road","",""],
+                "TaskResourceRequirements":[10,2,20],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":7
+        },        {
+                "TaskResource":[46,47,46],
+                "TaskBuilding":["Warehouse","","Road"],
+                "TaskResourceRequirements":[2,4,15],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":8
+        },        {
+                "TaskResource":[46,6,46],
+                "TaskBuilding":["Well","","Meadow"],
+                "TaskResourceRequirements":[2,30,4],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":9
+        },        {
+                "TaskResource":[46,17,1],
+                "TaskBuilding":["Pasture","",""],
+                "TaskResourceRequirements":[1,50,50],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":10
+        },        {
+                "TaskResource":[46,47,43],
+                "TaskBuilding":["LoggingCamp","",""],
+                "TaskResourceRequirements":[1,5,20],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":10
+        },        {
+                "TaskResource":[46,46,9],
+                "TaskBuilding":["Barn","Pasture",""],
+                "TaskResourceRequirements":[1,2,4],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":11
+        },        {
+                "TaskResource":[46,46,18],
+                "TaskBuilding":["Lumbermill","Road",""],
+                "TaskResourceRequirements":[1,25,40],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":12
+        },        {
+                "TaskResource":[46,46,4],
+                "TaskBuilding":["Brewery","Farm",""],
+                "TaskResourceRequirements":[1,4,10],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":13
+        },        {
+                "TaskResource":[46,46,44],
+                "TaskBuilding":["Stonemason","Quarry",""],
+                "TaskResourceRequirements":[1,2,2],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":14
+        },        {
+                "TaskResource":[46,47,7],
+                "TaskBuilding":["LoggingCamp","",""],
+                "TaskResourceRequirements":[1,6,10],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":15
+        },        {
+                "TaskResource":[46,9,4],
+                "TaskBuilding":["Dock","",""],
+                "TaskResourceRequirements":[2,6,30],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":16
+        },        {
+                "TaskResource":[46,46,46],
+                "TaskBuilding":["House","LoggingCamp","Meadow"],
+                "TaskResourceRequirements":[1,6,6],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":17
+        },        {
+                "TaskResource":[46,3,19],
+                "TaskBuilding":["CharcoalHut","",""],
+                "TaskResourceRequirements":[1,80,20],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":18
+        },        {
+                "TaskResource":[46,47,43],
+                "TaskBuilding":["Mine","",""],
+                "TaskResourceRequirements":[1,7,20],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":19
+        },        {
+                "TaskResource":[46,46,17],
+                "TaskBuilding":["Forge","CharcoalHut",""],
+                "TaskResourceRequirements":[1,2,30],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":20
+        },        {
+                "TaskResource":[46,46,4],
+                "TaskBuilding":["Cidery","Orchard",""],
+                "TaskResourceRequirements":[1,2,30],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":21
+        },        {
+                "TaskResource":[46,9,12],
+                "TaskBuilding":["LoggingCamp","",""],
+                "TaskResourceRequirements":[1,8,20],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":22
+        },        {
+                "TaskResource":[46,47,29],
+                "TaskBuilding":["Vinyard","",""],
+                "TaskResourceRequirements":[1,8,30],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":23
+        },        {
+                "TaskResource":[46,46,7],
+                "TaskBuilding":["Mansion","Dock",""],
+                "TaskResourceRequirements":[1,4,40],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":24
+        },        {
+                "TaskResource":[46,46,20],
+                "TaskBuilding":["Coop","Field",""],
+                "TaskResourceRequirements":[1,8,20],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":25
+        },        {
+                "TaskResource":[46,46,43],
+                "TaskBuilding":["Warehouse","Road",""],
+                "TaskResourceRequirements":[4,50,20],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":26
+        },        {
+                "TaskResource":[46,46,9],
+                "TaskBuilding":["Weaver","Pasture",""],
+                "TaskResourceRequirements":[1,4,10],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":27
+        },        {
+                "TaskResource":[46,47,17],
+                "TaskBuilding":["LoggingCamp","",""],
+                "TaskResourceRequirements":[1,9,40],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":28
+        },        {
+                "TaskResource":[46,46,29],
+                "TaskBuilding":["Hive","Meadow",""],
+                "TaskResourceRequirements":[1,10,50],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":29
+        },        {
+                "TaskResource":[46,46,20],
+                "TaskBuilding":["Winery","Vinyard",""],
+                "TaskResourceRequirements":[1,4,30],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":30
+        },        {
+                "TaskResource":[46,46,7],
+                "TaskBuilding":["Estate","Coop",""],
+                "TaskResourceRequirements":[1,2,60],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":31
+        },        {
+                "TaskResource":[46,21,47],
+                "TaskBuilding":["Stable","",""],
+                "TaskResourceRequirements":[1,10,10],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":32
+        },        {
+                "TaskResource":[46,46,46],
+                "TaskBuilding":["Mill","Farm","Road"],
+                "TaskResourceRequirements":[1,6,100],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":33
+        },        {
+                "TaskResource":[46,46,9],
+                "TaskBuilding":["Bakery","Well",""],
+                "TaskResourceRequirements":[1,4,12],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":34
+        },        {
+                "TaskResource":[46,46,44],
+                "TaskBuilding":["Blacksmith","Forge",""],
+                "TaskResourceRequirements":[1,2,10],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":35
+        },        {
+                "TaskResource":[46,46,46],
+                "TaskBuilding":["Meadery","Hive","Meadow"],
+                "TaskResourceRequirements":[1,2,12],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":36
+        },        {
+                "TaskResource":[46,46,47],
+                "TaskBuilding":["Castle","Bakery",""],
+                "TaskResourceRequirements":[1,2,11],
+                "QuestTitle":"",
+                "IntroText":"",
+                "RewardText":"",
+                "level":37
+        }
+    ]
+}

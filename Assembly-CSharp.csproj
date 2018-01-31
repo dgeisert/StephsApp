@@ -61,6 +61,7 @@
      <Compile Include="Assets\_Important\Scripts\UI\PaymentPackage.cs" />
      <Compile Include="Assets\_Important\Scripts\UI\Quest.cs" />
      <Compile Include="Assets\_Important\Scripts\UI\QuestCard.cs" />
+     <Compile Include="Assets\_Important\Scripts\UI\QuestList.cs" />
      <Compile Include="Assets\_Important\Scripts\World\Biome.cs" />
      <Compile Include="Assets\_Important\Scripts\World\Building.cs" />
      <Compile Include="Assets\_Important\Scripts\World\CreateIsland.cs" />

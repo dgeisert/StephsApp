@@ -13,7 +13,11 @@ public class QuestManager : MonoBehaviour {
 
 	public List<string> completedQuests = new List<string>();
 
-	public void Init(){
+	public void Init(QuestList ql){
+		quests = new List<Quest> ();
+		foreach (Quest q in ql.quests) {
+			quests.Add (q);
+		}
 		instance = this;
 	}
 
@@ -24,7 +28,7 @@ public class QuestManager : MonoBehaviour {
 				if(activeQuests[j].TaskResource[i] == Resource.ConstructedBuildings){
 					int bCount = 0;
 					foreach(Building b in ResourceManager.instance.constructedBuildings){
-						bCount += activeQuests [j].TaskBuilding [i].name == b.name ? 1 : 0;
+						bCount += activeQuests [j].TaskBuilding [i] == b.name ? 1 : 0;
 					}
 					if (activeQuests [j].TaskResourceRequirements [i] > bCount) {
 						completed = false;

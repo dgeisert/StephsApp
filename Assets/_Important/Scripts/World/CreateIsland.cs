@@ -335,17 +335,27 @@ public class CreateIsland : MonoBehaviour
 	public Node GetNode(Vector3 point){
 		point -= transform.position;
 		point += Vector3.one * size / 2;
-		//Debug.Log (Mathf.FloorToInt (point.x) + ", " + Mathf.FloorToInt (point.z));
-		return nodes [Mathf.FloorToInt (point.x)
-			, Mathf.FloorToInt (point.z)];
+		try{
+			return nodes [Mathf.FloorToInt (point.x)
+				, Mathf.FloorToInt (point.z)];
+		}
+		catch{
+			Debug.Log (Mathf.FloorToInt (point.x) + ", " + Mathf.FloorToInt (point.z));
+			return null;
+		}
 	}
 
 	public Node GetNode(Vector2 point){
 		point -= new Vector2(transform.position.x, transform.position.z);
 		point += Vector2.one * size / 2;
-		//Debug.Log (Mathf.FloorToInt (point.x) + ", " + Mathf.FloorToInt (point.z));
+		try{
 		return nodes [Mathf.FloorToInt (point.x)
 			, Mathf.FloorToInt (point.y)];
+			}
+		catch{
+			Debug.Log (Mathf.FloorToInt (point.x) + ", " + Mathf.FloorToInt (point.y));
+			return null;
+		}
 	}
 
 	public int treeValue = 10;

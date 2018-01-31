@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]public class Quest {
 
 	public Resource[] TaskResource;
-	public Building[] TaskBuilding;
+	public string[] TaskBuilding;
 	public int[] TaskResourceRequirements;
 	public string QuestTitle, IntroText, RewardText;
 	public int level, reward = 10;
